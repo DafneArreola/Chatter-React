@@ -5,6 +5,35 @@
     <body>
         <p>HERE WE WILL CONTROL USER PLAYBACK</p>
         <p>{{ content }}</p>
+        <br>
+        <p>{{ playback_status }}</p>
+        <br>
+
+        <!--FLASK FORM-->
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            {{ form.name.label }}
+            {{ form.name() }}
+
+            {{ form.comment.label }}
+            {{ form.comment() }}
+
+            {{ form.user_id.label }}
+            {{ form.user_id() }}
+
+            {{ form.timestamp.label }}
+            {{ form.timestamp() }}
+
+            {{ form.submit() }}
+        </form>
+
+
+        <br/><br/><br/>
+
+        {% for user in table_data %}
+        {{ user._id }}. {{ user.name }} : {{ user.user_id }} - {{user.comment}} - {{user.time_stamp}}
+        {% endfor %}
 
     </body>
 </html>
