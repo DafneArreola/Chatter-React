@@ -35,5 +35,8 @@
         {{ user._id }}. {{ user.name }} : {{ user.user_id }} - {{user.comment}} - {{user.time_stamp}}
         {% endfor %}
 
+        <!--LOGOUT-->
+        <a href="{{ url_for('spotify_login', show_dialog=True) }}">log_out</a>
+
     </body>
 </html>

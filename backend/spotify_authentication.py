@@ -12,7 +12,7 @@ API_BASE_URL = 'https://api.spotify.com/v1/'
 
 
 
-def create_spotify_login_link():
+def create_spotify_login_link(show_dialog):
     scope = 'user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-read-private user-read-email'
 
     params =  {
@@ -20,6 +20,7 @@ def create_spotify_login_link():
         'response_type': 'code',
         'scope' : scope,
         'redirect_uri': REDIRECT_URI,
+        'show_dialog': show_dialog
     }
 
     return f"{AUTH_URL}?{urllib.parse.urlencode(params)}"

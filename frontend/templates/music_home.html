@@ -4,7 +4,9 @@
     </header>
     <body>
         <h1>music</h1>
-        <a href="{{ url_for('spotify_login') }}">Login with Spotify</a>
+        <a href="{{ url_for('spotify_login', show_dialog=False) }}">Login with Spotify</a>
+
+        
 
     </body>
 </html>

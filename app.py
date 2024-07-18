@@ -47,15 +47,17 @@ def start():
 
 @app.route('/music_home')
 def music_home():
-    session.pop('access_token', None)
-    session.pop('refresh_token', None)
-    session.pop('expires_at', None)
+    #session.pop('access_token', None)
+    #session.pop('refresh_token', None)
+    #session.pop('expires_at', None)
     return render_template('music_home.html')
 
 
 @app.route('/spotify_login')
 def spotify_login():
-    return redirect(create_spotify_login_link())
+
+    spotify_login_link_url = create_spotify_login_link(request.args.get('show_dialog'))
+    return redirect(spotify_login_link_url)
 
 @app.route('/callback')
 def callback(): # this will handle both successful and unsuccessful login attempts
@@ -101,7 +103,7 @@ def callback(): # this will handle both successful and unsuccessful login attemp
 def control_playback():
     # "access_token" will only be in session if user is logged in
     if 'access_token' not in session:
-        return redirect(url_for('spotify_login'))
+        return redirect(url_for('spotify_login', show_dialog=False))
 
     # if token is expired, we will refresh it in the background (user will not need to login again)
     if datetime.now().timestamp() > session['expires_at']:
@@ -149,7 +151,7 @@ def control_playback():
 @app.route('/spotify_refresh_token')
 def spotify_refresh_token():
     if 'refresh_token' not in session:
-        return redirect(url_for('spotify_login'))
+        return redirect(url_for('spotify_login', show_dialog=False))
     
     req_body = {
         'grant_type': 'refresh_token',
