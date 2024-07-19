@@ -43,6 +43,8 @@ body {
     flex: 1;
 }
 
+/*All for the login and register stuff */
+
 .container {
     width: 100%;
     max-width: 400px;

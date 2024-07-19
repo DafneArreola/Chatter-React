@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
-
 {% block content %}
 
 <html lang="en">
@@ -28,7 +26,7 @@
                 <button type="submit" class="login-button">LOGIN</button>
                 <div class="signup-link">
                     Or Sign Up Using
-                    <a href="{{ url_for('register') }}">SIGN UP</a>
+                    <a href="{{ url_for('main.register') }}">SIGN UP</a>
                 </div>
             </form>
         </div>
