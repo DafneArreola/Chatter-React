@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Music Search - My Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/music_search.css') }}">
+{% endblock %}
+
+{% block content %}
+    <!-- Search Header -->
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Rate Your Favorite Music</h1>
+        
+        <!-- Search Form -->
+        <form action="{{ url_for('main.music_search') }}" method="get">
+            <div class="input-group mb-4">
+                <input type="text" class="form-control form-control-lg" name="q" placeholder="Search for songs..." aria-label="Search for songs">
+                <div class="input-group-append">
+                    <button class="btn btn-primary btn-lg" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Display Song Covers (Placeholder) -->
+    <div class="container">
+        <div class="row">
+            {% for song in results %}
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <img src="{{ song.cover_image }}" class="card-img-top" alt="{{ song.title }}">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ song.title }}</h5>
+                        <p class="card-text">{{ song.artist }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- <script src="{{ url_for('static', filename='js/music-search.js') }}"></script> -->
+{% endblock %}
