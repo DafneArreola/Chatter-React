@@ -1,0 +1,62 @@
+/* Hero Image Section */
+.hero-image {
+    position: relative;
+    background: url('/static/images/hero-img.jpg') no-repeat center center;
+    background-size: cover;
+    background-position: center;
+    height: 400px;
+    width: 100%;
+}
+
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+;
+}
+
+.hero-text h1 {
+    font-size: 3em;
+}
+
+.hero-text p {
+    font-size: 1.5em;
+}
+
+/* Introduction Section */
+.intro-section {
+    padding: 20px;
+    text-align: center;
+}
+
+.carousel-section {
+    padding: 40px; 
+}
+
+.carousel-item img {
+    width: 100%;
+}
+
+.carousel-caption {
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Carousel Controls */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5); /* Darker background for controls */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5); /* Darker background for icons */
+}

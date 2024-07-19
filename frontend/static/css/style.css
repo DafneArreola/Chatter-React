@@ -1,0 +1,44 @@
+/* static/css/style.css */
+
+/* Reset some default styles to ensure consistency across browsers */
+body, h1, h2, h3, h4, h5, h6, p, ul, li, a {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Ensure padding and border are included in element's total width and height */
+}
+
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif; /* Set default font */
+    line-height: 1.6; /* Improve readability with line spacing */
+    color: #333; /* Set text color */
+    background-color: #f5f5f5; /* Set background color */
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navbar-custom {
+    background-color: #000000;
+}
+
+.footer {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 10px 0;
+    position: relative;
+    width: 100%;
+    margin-top: auto;
+}
+
+.footer a {
+    color: #ffffff;
+    margin: 0 10px;
+}
+
+.content {
+    flex: 1;
+}
