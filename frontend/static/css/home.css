@@ -60,3 +60,39 @@
 .carousel-control-next-icon {
     background-color: rgba(0, 0, 0, 0.5); /* Darker background for icons */
 }
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Container for the gradient backdrop */
+.gradient-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Behind all content */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fluid gradient animation */
+.fluid-gradient {
+    width: 150%;
+    height: 150%;
+    background: linear-gradient(115deg, #ff7eb3 0%, #ff65a3 25%, #7afcff 50%, #feff9c 75%, #ff508b 100%);
+    background-size: 200% 200%;
+    animation: gradient-animation 10s ease infinite;
+}
+
+/* Keyframes for gradient animation */
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}

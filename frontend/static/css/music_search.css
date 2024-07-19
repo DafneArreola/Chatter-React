@@ -1,0 +1,59 @@
+/* static/css/music_search.css */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* Hero Section Styling */
+.hero-section {
+    width: 100%;
+    height: 60vh; /* Take up 60% of the viewport height */
+    background-color: #333; /* Dark background color */
+    color: #fff; /* Text color */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3rem; /* Increase font size for header */
+    margin-bottom: 1rem;
+}
+
+.search-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.search-bar {
+    width: 100%; /* Make search bar take full width of its container */
+    max-width: 800px; /* Set a maximum width for the search bar */
+    height: 50px; /* Increase height of the search bar */
+    margin-bottom: 10px; /* Space between the search bar and the button */
+}
+
+.btn-primary {
+    height: 50px; /* Match button height to search bar */
+    line-height: 50px; /* Center text vertically in the button */
+    width: 100%; /* Make the button take full width of its container */
+    max-width: 800px; /* Match the button width to the search bar */
+    text-align: center;
+}
+
+/* Style for the song covers */
+.card {
+    border: 1px solid #ddd; /* Light border for the card */
+}
+
+.card-img-top {
+    height: 150px; /* Fixed height for images */
+    object-fit: cover; /* Ensure image covers the space */
+}
+
+.card-body {
+    text-align: center;
+}

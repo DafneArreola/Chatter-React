@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/movies.css') }}">
+<script src="{{ url_for('static', filename='js/movies.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="hero">
+        <div class="blob">
+            <svg viewBox="60 80 150 150" xmlns="http://www.w3.org/2000/svg" class="gradient-svg">
+                <defs>
+                    <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#f9c6c9" /> <!-- Pale Pink -->
+                        <stop offset="25%" stop-color="#f9a6c0" /> <!-- Light Pink -->
+                        <stop offset="50%" stop-color="#a2d9ff" /> <!-- Light Blue -->
+                        <stop offset="75%" stop-color="#9575cd" /> <!-- Medium Purple -->
+                        <stop offset="100%" stop-color="#b39ddb" /> <!-- Light Purple -->
+                    </linearGradient>
+                </defs>
+                <path fill="url(#blobGradient)" d="M35,-37.2C46.7,-39.7,58.6,-31.3,66.8,-18.7C75.1,-6.1,79.9,10.7,71.3,18.9C62.8,27.1,40.9,26.6,26.8,24.5C12.7,22.3,6.3,18.5,-3.8,23.6C-13.9,28.8,-27.7,43,-33.5,42.5C-39.4,41.9,-37.1,26.6,-44.1,12.6C-51.1,-1.5,-67.2,-14.3,-64.8,-20.9C-62.5,-27.6,-41.6,-28.1,-27.7,-24.9C-13.8,-21.7,-6.9,-14.9,2.4,-18.1C11.6,-21.4,23.3,-34.7,35,-37.2Z" transform="translate(100 100)" />
+            </svg>            
+        </div>
+        <div class="content">
+            <h1>Welcome to My Website</h1>
+            <p>Your one-stop destination to rate and comment on your favorite Movies, TV shows, and Music</p>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}{% endblock %}

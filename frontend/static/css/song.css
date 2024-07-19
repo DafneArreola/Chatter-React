@@ -1,0 +1,37 @@
+/* static/css/song_detail.css */
+
+/* Song Cover */
+img.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Rating */
+.rating {
+    display: inline-block;
+}
+
+.star {
+    font-size: 2rem;
+    color: #ffd700; /* Gold color */
+    cursor: pointer;
+}
+
+.star:hover {
+    color: #ffcc00; /* Lighter gold */
+}
+
+/* Progress Bar */
+.progress {
+    height: 30px;
+}
+
+.progress-bar {
+    background-color: #007bff; /* Blue color */
+}
+
+/* Comments */
+.comment {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
