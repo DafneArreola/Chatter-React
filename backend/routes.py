@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify, render_template
-from backend.models import User, Media, Favorite, Rating, Comment
 from backend.database import db
 from backend.movie_api import get_movie_details, search_movies, get_popular_movies
 
