@@ -5,6 +5,7 @@ from backend.music_api import get_home_tracks
 
 main = Blueprint('main', __name__)
 
+
 @main.route('/')
 def home():
     movies = get_popular_movies()

@@ -1,5 +1,5 @@
 import requests
-from backend.config import Config #keys and stuff should be moved here
+from backend.config import Config  # keys and stuff should be moved here
 import json
 import pprint
 
@@ -8,11 +8,12 @@ CLIENT_SECRET = Config.MUSIC_CLIENT_SECRET
 REDIRECT_URI = 'http://localhost:5000/callback'
 
 AUTH_URL = 'https://accounts.spotify.com/authorize'
-TOKEN_URL = 'https://accounts.spotify.com/api/token/' # used to obtain and refresh token
+TOKEN_URL = 'https://accounts.spotify.com/api/token/'  # used to obtain and refresh token
 API_BASE_URL = 'https://api.spotify.com/v1/'
 
+
 def obtain_non_user_token():
-     # request params to obrain access_token to make NON PERMISSION calls
+      # request params to obrain access_token to make NON PERMISSION calls
     req_body = {
         'grant_type': 'client_credentials',
         'client_id': CLIENT_ID,
