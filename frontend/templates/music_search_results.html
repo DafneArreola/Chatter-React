@@ -20,10 +20,10 @@
                 {% for song in results %}
                 <div class="col-md-3 mb-4">
                     <div class="card">
-                        <img src="{{ song.cover_image }}" class="card-img-top" alt="{{ song.title }}">
+                        <img src="{{ song['image'] }}" class="card-img-top" alt="{{ song['name'] }}">
                         <div class="card-body">
-                            <h5 class="card-title">{{ song.title }}</h5>
-                            <p class="card-text">{{ song.artist }}</p>
+                            <h5 class="card-title">{{ song['name'] }}</h5>
+                            <p class="card-text">{{ song['artist'] }}</p>
                         </div>
                     </div>
                 </div>

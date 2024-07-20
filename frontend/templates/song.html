@@ -10,13 +10,14 @@
     <div class="container mt-5">
         <div class="text-center">
             <!-- Song Cover -->
-            <img src="{{ song.cover_image }}" alt="{{ song.title }}" class="img-fluid mb-3">
+            <img src="{{ song['image'] }}" alt="{{ song.title }}" class="img-fluid mb-3">
 
             <!-- Song Title -->
-            <h1>{{ song.title }}</h1>
+            <h1>{{ song['name'] }}</h1>
             
             <!-- Song Info -->
-            <p>{{ song.info }}</p>
+            <p>{{ song['artists'] }}</p>
+            <p>other info can go here</p>
         </div>
 
         <!-- Rating Section -->
@@ -43,7 +44,7 @@
         <div id="comments" class="mt-3">
             {% for comment in comments %}
                 <div class="comment">
-                    <p><strong>{{ comment.username }}:</strong> {{ comment.text }} <small>{{ comment.timestamp }}</small></p>
+                    <p><strong>{{ comment['username'] }}:</strong> {{ comment['text'] }} <small>{{ comment['timestamp'] }}</small></p>
                 </div>
             {% endfor %}
         </div>
