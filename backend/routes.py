@@ -2,6 +2,7 @@ from flask import Blueprint, request, render_template
 from backend.database import db
 from backend.movie_api import get_movie_details, search_movies, get_popular_movies
 from backend.music_api import get_home_tracks
+from backend.tv_show_api import get_popular_tv_shows_for_carousel
 
 main = Blueprint('main', __name__)
 
@@ -10,15 +11,25 @@ main = Blueprint('main', __name__)
 def home():
     movies = get_popular_movies()
     tracks = get_home_tracks()
-    return render_template('home.html', movies=movies, tracks=tracks)
+    shows = get_popular_tv_shows_for_carousel()
+    return render_template('home.html', movies=movies, tracks=tracks, shows=shows)
 
 @main.route('/movies')
 def movies():
     return render_template('movies.html', movies=movies)
 
+
+# @main.route('/shows')
+# def shows():
+#     return render_template('shows.html', shows=shows)
+
+
 @main.route('/music')
 def music_search():
     return render_template('music_search.html')
+
+
+
 
 # @main.route('/music_search', methods=['GET'])
 # def music_search():

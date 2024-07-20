@@ -37,7 +37,6 @@ def get_home_tracks():
     response = requests.get(API_BASE_URL + f'playlists/{playlist_id}/tracks?limit=18', headers=headers)
     tracks = response.json()['items']
 
-
     filtered_tracks = []
     for track in tracks:
         new_entry={}
