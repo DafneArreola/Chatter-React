@@ -1,0 +1,39 @@
+<!-- templates/show.html -->
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Show Details - My Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/show.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Show Poster -->
+        <div class="col-md-4">
+            <img src="{{ Show.poster_url }}" alt="{{ show.title }}" class="img-fluid">
+        </div>
+        <!-- Show Details -->
+        <div class="col-md-8">
+            <h1>{{ show.title }}</h1>
+            <p>{{ show.info }}</p>
+            <!-- Rating Section -->
+            <div class="rating">
+                <h3>Rate this Show:</h3>
+                <div class="stars">
+                    {% for i in range(1, 6) %}
+                        <span class="star" data-value="{{ i }}">&#9733;</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Timeline Section -->
+            <div class="timeline mt-4">
+                <input type="range" class="timeline-slider" min="0" max="{{ show.duration }}" step="1" value="0">
+                <div class="comments">
+                    <!-- Comments will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

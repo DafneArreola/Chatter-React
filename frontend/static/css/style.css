@@ -11,8 +11,8 @@ body, h1, h2, h3, h4, h5, h6, p, ul, li, a {
 body {
     font-family: Arial, sans-serif; /* Set default font */
     line-height: 1.6; /* Improve readability with line spacing */
-    color: #333; /* Set text color */
-    background-color: #f5f5f5; /* Set background color */
+    color: #fff; /* Set text color */
+    background-color: #0e0b16; /* Set background color */
 }
 
 .wrapper {
@@ -21,17 +21,45 @@ body {
     min-height: 100vh;
 }
 
+/* Navbar */
 .navbar-custom {
-    background-color: #000000;
+    background-color: #0e0b16; /* Dark background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Shadow to make it pop out */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Optional border */
+    z-index: 1000; /* Ensure it stays on top */
 }
 
+.navbar-brand {
+    margin-right: 50px; /* Add space between logo/title and the rest of the navbar links */
+}
+
+.navbar-nav {
+    flex-direction: row; /* Ensure horizontal layout */
+}
+
+.navbar-nav .nav-item {
+    margin-left: 20px; /* Adjust spacing between links */
+}
+
+.navbar-nav .nav-item:last-child {
+    margin-left: auto; /* Push the last item (Login) to the far right */
+}
+
+/* Footer */
 .footer {
-    background-color: #000000;
+    background-color: #0e0b16; /* Dark background color */
     color: #ffffff;
     padding: 10px 0;
     position: relative;
     width: 100%;
     margin-top: auto;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5); /* Shadow to make it pop out */
+    z-index: 1000; /* Ensure it stays on top */
+}
+
+/* Box Shadow Styling for Better Visibility */
+.navbar-custom, .footer {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Optional subtle border for extra depth */
 }
 
 .footer a {

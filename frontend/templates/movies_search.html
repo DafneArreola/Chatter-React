@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Movies Search - My Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/movies_search.css') }}">
+{% endblock %}
+
+{% block content %}
+    <!-- Search Header -->
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Rate Your Favorite Movie</h1>
+        
+        <!-- Search Form -->
+        <form action="{{ url_for('main.movies_search') }}" method="get">
+            <div class="input-group mb-4">
+                <input type="text" class="form-control form-control-lg" name="q" placeholder="Search for Movies..." aria-label="Search for movies">
+                <div class="input-group-append">
+                    <button class="btn btn-primary btn-lg" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Display Movie Covers (Placeholder) -->
+    <div class="container">
+        <div class="row">
+            {% for movie in results %}
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <img src="{{ movie.cover_image }}" class="card-img-top" alt="{{ movie.title }}">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ Movie.title }}</h5>
+                        <p class="card-text">{{ Movie.artist }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- <script src="{{ url_for('static', filename='js/movie-search.js') }}"></script> -->
+{% endblock %}
