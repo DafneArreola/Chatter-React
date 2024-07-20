@@ -11,11 +11,12 @@
         <h1 class="text-center mb-4">Rate Your Favorite Music</h1>
         
         <!-- Search Form -->
-        <form action="{{ url_for('main.music_search') }}" method="get">
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
             <div class="input-group mb-4">
-                <input type="text" class="form-control form-control-lg" name="q" placeholder="Search for songs..." aria-label="Search for songs">
+                {{ form.name_search(class="form-control form-control-lg") }}
                 <div class="input-group-append">
-                    <button class="btn btn-primary btn-lg" type="submit">Search</button>
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
                 </div>
             </div>
         </form>
@@ -27,10 +28,11 @@
             {% for song in results %}
             <div class="col-md-3 mb-4">
                 <div class="card">
-                    <img src="{{ song.cover_image }}" class="card-img-top" alt="{{ song.title }}">
+                    <a href="{{ url_for('main.song_detail', song_id=song['id']) }}"><span></span></a>
+                    <img src="{{ song['image'] }}" class="card-img-top" alt="{{ song['name'] }}">
                     <div class="card-body text-center">
-                        <h5 class="card-title">{{ song.title }}</h5>
-                        <p class="card-text">{{ song.artist }}</p>
+                        <h5 class="card-title">{{ song['name'] }}</h5>
+                        <p class="card-text">{{ song['artists'] }}</p>
                     </div>
                 </div>
             </div>
