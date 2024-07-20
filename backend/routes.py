@@ -13,12 +13,16 @@ def home():
     return render_template('home.html', movies=movies, tracks=tracks)
 
 @main.route('/movies')
-def movies():
-    return render_template('movies.html', movies=movies)
+def movies_search():
+    return render_template('movies_search.html')
 
 @main.route('/music')
 def music_search():
     return render_template('music_search.html')
+
+@main.route('/shows')
+def shows_search():
+    return render_template('shows_search.html')
 
 # @main.route('/music_search', methods=['GET'])
 # def music_search():
