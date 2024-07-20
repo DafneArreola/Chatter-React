@@ -13,6 +13,8 @@ body {
     line-height: 1.6; /* Improve readability with line spacing */
     color: #333; /* Set text color */
     background-color: #f5f5f5; /* Set background color */
+    
+    
 }
 
 .wrapper {
@@ -45,17 +47,22 @@ body {
 
 /*All for the login and register stuff */
 
-.container {
-    width: 100%;
-    max-width: 400px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+.container-special {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 88vh; /* Ensure the container takes the full height of the viewport */
 }
 
 .login-box {
+    width: 100%;
+    max-width: 400px;
     text-align: center;
+    background-color: #333;  /* Dark grey background color */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
 }
 
 .login-box h2 {

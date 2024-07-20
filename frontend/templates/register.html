@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="container">
+    <div class="container-special">
         <div class="login-box">
             <h2>Sign Up</h2>
             <form method="POST">
@@ -28,8 +28,8 @@
                 </div>
                 <button type="submit" class="login-button">SIGN UP</button>
                 <div class="signup-link">
-                    Or Login Using
-                    <a href="{{ url_for('main.login') }}">LOGIN</a>
+                    Already registered?
+                    <a href="{{ url_for('main.login') }}">Login here!</a>
                 </div>
             </form>
         </div>
