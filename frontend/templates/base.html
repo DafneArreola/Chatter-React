@@ -23,10 +23,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto"> <!-- Push items to the left -->
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('main.movies') }}">Movies</a>
+                        <a class="nav-link text-white" href="{{ url_for('main.movies_search') }}">Movies</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">TV Shows</a>
+                        <a class="nav-link text-white" href="{{ url_for('main.shows_search') }}">TV Shows</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{ url_for('main.music_search') }}">Music</a>
