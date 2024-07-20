@@ -51,6 +51,7 @@ def get_popular_tv_shows_for_carousel():
     return filtered_shows
 
 
+
 # Example
 # popular_shows = get_popular_tv_shows_for_carousel()
 # print(popular_shows)

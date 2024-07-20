@@ -18,12 +18,6 @@ def home():
 def movies():
     return render_template('movies.html', movies=movies)
 
-
-# @main.route('/shows')
-# def shows():
-#     return render_template('shows.html', shows=shows)
-
-
 @main.route('/music')
 def music_search():
     return render_template('music_search.html')
