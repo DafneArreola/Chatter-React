@@ -1,0 +1,30 @@
+<html>
+    <header>
+        <link rel="stylesheet" href="{{ url_for('static', filename='music_home2.css') }}">
+    </header>
+    <body>
+        <h1>music home after logging in</h1> <br/>
+        <h3>currently playing song:</h3>
+        <div>
+            <a href="{{ url_for('music_player') if playback_status else '' }}">go to hext page</a>
+            <img src="{{ playback_status['image'] if playback_status else '' }}" alt="no currently playing song. please play a song on spotify player">
+            
+            {% if playback_status %}
+            
+            <p>{{playback_status['name']}}</p>
+            <p>{{playback_status['progress_ms']}} / {{playback_status['duration_ms']}}</p>
+            {% endif %}
+
+            
+            <p>{{playback_status}}</p>
+        </div>
+        
+
+        
+        <script src="{{ url_for('static', filename='js/music_player.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    </body>
+</html>
+

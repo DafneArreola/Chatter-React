@@ -11,7 +11,7 @@ from flask import Flask, render_template, request, jsonify, session, url_for, fl
 from flask_sqlalchemy import SQLAlchemy #NOTE: i am using the flask_sqlalchemy, but im sure this code can be reafactored to use the engine method from codio
 
 template_dir = os.path.abspath('frontend/templates') # this just specifies the location of the templates folder, so you only have to put file name when using "render_template('File_name')"
-app = Flask(__name__, template_folder=template_dir)
+app = Flask(__name__, template_folder=template_dir, static_folder='frontend/static')
 app.secret_key = '257fdf6bda7c13f4f79223af7f8cdd3e'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite'
 #app.config['SQLALCHECMY_TRACK_MODIFICATIONS'] = False
@@ -61,43 +61,62 @@ def spotify_login():
 
 @app.route('/callback')
 def callback(): # this will handle both successful and unsuccessful login attempts
-    
-    # flash(request.args)
-    # if 'error' in request.args:
-    #     # if uncessful login attempt, we will simply return error as a json object
-    #     print("ERROR FOUND IN REQUEST")
-    #     return {'error': request.args['error']}
-    
-    # if 'code' in request.args:
-    #     #if successful login, we will use info to get token for the user so we can access playback features, and redirect user to __ page
-    #     req_body = {
-    #         'code': request.args['code'],
-    #         'grant_type': 'authorization_code',
-    #         'redirect_uri': REDIRECT_URI,
-    #         'client_id': CLIENT_ID,
-    #         'client_secret': CLIENT_SECRET
-    #     }
-
-    #     print("{}:{}".format(CLIENT_ID, CLIENT_SECRET).encode())
-    #     #formatted = "{}:{}".format(CLIENT_ID, CLIENT_SECRET).encode()
-    #     #encoded = base64.b64encode(formatted)
-    #     #headers = {"Content-Type" : 'application/x-www-form-urlencoded', 
-    #     #           "Authorization" : "Basic {}".format(encoded)} 
-        
-    #     response = requests.post(TOKEN_URL, data=req_body)
-    #     token_info = response.json()
-
-    #     session['access_token'] = token_info['access_token']  # used to do tasks requiring auth (lasts a day)
-    #     session['refresh_token'] = token_info['refresh_token']  # used to avoid user needing to login after token expires
-    #     session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']  # keeping track of when token expires
-
+ 
         callback_successful = callback_result(request=request, session=session)
         if callback_successful:
-            return redirect(url_for('control_playback'))
+            return redirect(url_for('music_home2'))
         else:
             return {'error': request.args['error']}
         
-            
+@app.route('/music_home2')
+def music_home2():
+    headers = {
+        'Authorization': f"Bearer {session['access_token']}"
+    }
+    currently_playing_response = requests.get(API_BASE_URL + 'me/player/currently-playing', headers=headers)
+    playback_status = None
+    playback_status_return = {}
+    if currently_playing_response.status_code == 204:
+        flash("there is no media currently playing")
+        print("there is no media currently playing")
+    else:
+        playback_status = currently_playing_response.json()
+        playback_status_return['image'] = playback_status['item']['album']['images'][1]['url']
+        playback_status_return['name'] = playback_status['item']['name']
+        playback_status_return['id'] = playback_status['item']['id']
+        playback_status_return['duration_ms'] = playback_status['item']['duration_ms']
+        playback_status_return['progress_ms'] = playback_status['progress_ms']
+
+        playback_status = playback_status_return
+
+
+    #json.dumps(playback_status, indent=3)
+    #with open("Output.txt", "a", encoding = "UTF-8") as f:
+    #    f.write(json.dumps(playback_status, indent=3 ))
+    
+    
+    return render_template('music_home2.html', playback_status=playback_status) 
+
+@app.route('/music_player')      
+def music_player():
+    headers = {
+        'Authorization': f"Bearer {session['access_token']}"
+    }
+    currently_playing_response = requests.get(API_BASE_URL + 'me/player/currently-playing', headers=headers)
+    playback_status_return = {}
+    if currently_playing_response.status_code == 204:
+        flash("there is no media currently playing")
+        print("there is no media currently playing")
+    else:
+        playback_status = currently_playing_response.json()
+        playback_status_return['image'] = playback_status['item']['album']['images'][1]['url']
+        playback_status_return['name'] = playback_status['item']['name']
+        playback_status_return['id'] = playback_status['item']['id']
+        playback_status_return['duration_ms'] = playback_status['item']['duration_ms']
+        playback_status_return['progress_ms'] = playback_status['progress_ms']
+
+    return render_template('music_player.html', playback_status=playback_status_return)
+
 
 @app.route('/control_playback', methods=['GET', 'POST'])
 def control_playback():
@@ -114,8 +133,8 @@ def control_playback():
         'Authorization': f"Bearer {session['access_token']}"
     }
     
-    response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
-    playlists = response.json()
+    # response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
+    # playlists = response.json()
 
     currently_playing_response = requests.get(API_BASE_URL + 'me/player/currently-playing', headers=headers)
     playback_status = ''
@@ -125,23 +144,32 @@ def control_playback():
     else:
         playback_status = currently_playing_response.json()
     
-    form = CommentForm()
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            comment = request.form.get('comment')
-            name = request.form.get('name')
-            user_id = request.form.get('user_id')
-            time_stamp = request.form.get('time_stamp')
+    progress_ms = playback_status['progress_ms']
+    duration_ms = playback_status['item']['duration_ms']
 
-            userr = users(comment, name, user_id, time_stamp)
-            db.session.add(userr)
-            db.session.commit()
+    return jsonify({'progress_ms': progress_ms,
+                    'duration_ms': duration_ms
+                    })
+    
 
-            flash("user added succesfuly")
 
-    table_data = users.query.order_by(users.name)
+    # form = CommentForm()
+    # if request.method == 'POST':
+    #     if form.validate_on_submit():
+    #         comment = request.form.get('comment')
+    #         name = request.form.get('name')
+    #         user_id = request.form.get('user_id')
+    #         time_stamp = request.form.get('time_stamp')
 
-    return render_template('control_playback.html', content=playlists, playback_status=playback_status, table_data=table_data, form=form)
+    #         userr = users(comment, name, user_id, time_stamp)
+    #         db.session.add(userr)
+    #         db.session.commit()
+
+    #         flash("user added succesfuly")
+
+    # table_data = users.query.order_by(users.name)
+
+    # return render_template('control_playback.html', content=playlists, playback_status=playback_status, table_data=table_data, form=form)
 
     #########################
     # CONTROL PLAYBACK HERE #
