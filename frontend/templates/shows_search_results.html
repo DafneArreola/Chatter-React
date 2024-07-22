@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block title %}
-    <title>Search Results - My Website</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/music_search_results.css') }}">
+    <title>Show Search Results - My Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/shows_searchResults.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -17,13 +17,13 @@
         <!-- Search Results -->
         <div class="row">
             {% if results %}
-                {% for song in results %}
+                {% for show in results %}
                 <div class="col-md-3 mb-4">
                     <div class="card">
-                        <img src="{{ song['image'] }}" class="card-img-top" alt="{{ song['name'] }}">
+                        <img src="{{ show.cover_image }}" class="card-img-top" alt="{{ show.title }}">
                         <div class="card-body">
-                            <h5 class="card-title">{{ song['name'] }}</h5>
-                            <p class="card-text">{{ song['artist'] }}</p>
+                            <h5 class="card-title">{{ show.title }}</h5>
+                            <p class="card-text">{{ show.artist }}</p>
                         </div>
                     </div>
                 </div>

@@ -3,3 +3,4 @@ __pycache__/
 instance/
 .env
 venv/
+Output.txt

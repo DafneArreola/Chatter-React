@@ -13,21 +13,26 @@
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-custom">
-            <a class="navbar-brand text-white" href="{{ url_for('main.home') }}">My Website</a>
+            <a class="navbar-brand text-white" href="{{ url_for('main.home') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="d-inline-block align-top" style="height: 40px; padding-right: 5px;">
+                My Website
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav mr-auto"> <!-- Push items to the left -->
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('main.movies') }}">Movies</a>
+                        <a class="nav-link text-white" href="{{ url_for('main.movies_search') }}">Movies</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">TV Shows</a>
+                        <a class="nav-link text-white" href="{{ url_for('main.shows_search') }}">TV Shows</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{ url_for('main.music_search') }}">Music</a>
                     </li>
+                </ul>
+                <ul class="navbar-nav ml-auto"> <!-- Push the Login link to the right -->
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{{ url_for('main.login') }}">Login</a>
                     </li>
