@@ -62,6 +62,7 @@ def get_home_tracks():
         new_entry={}
         new_entry['name'] = track['track']['name']
         new_entry['image'] = track['track']['album']['images'][1]['url']
+        new_entry['id'] = track['track']['id']
 
         filtered_tracks.append(new_entry)
 

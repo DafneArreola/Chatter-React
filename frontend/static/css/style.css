@@ -70,3 +70,102 @@ body {
 .content {
     flex: 1;
 }
+
+/*All for the login and register stuff */
+
+.container-special {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 88vh; /* Ensure the container takes the full height of the viewport */
+}
+
+.login-box {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    background-color: #333;  /* Dark grey background color */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+}
+
+.login-box h2 {
+    margin: 0 0 20px;
+    padding: 0;
+    color: #fff;
+    font-size: 24px;
+}
+
+.user-box {
+    position: relative;
+    margin: 30px 0;
+}
+
+.user-box input {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 30px;
+    border: none;
+    border-bottom: 1px solid #fff;
+    outline: none;
+    background: transparent;
+}
+
+.user-box label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #fff;
+    pointer-events: none;
+    transition: 0.5s;
+}
+
+.user-box input:focus ~ label,
+.user-box input:valid ~ label {
+    top: -20px;
+    left: 0;
+    color: #03e9f4;
+    font-size: 12px;
+}
+
+.forgot-password {
+    color: #03e9f4;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.login-button {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.login-button:hover {
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+}
+
+.signup-link {
+    margin-top: 20px;
+    color: #fff;
+}
+
+.signup-link a {
+    color: #03e9f4;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}

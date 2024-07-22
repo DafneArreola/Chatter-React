@@ -103,6 +103,7 @@
                     <div class="row">
                         {% for j in range(6) %}
                         <div class="col-md-2">
+                            <a href="{{ url_for('main.song_detail', song_id=tracks[i*6 + j]['id']) }}"><span class="media-card-span"></span></a>
                             <img src="{{ tracks[i*6 + j]['image'] }}" class="d-block w-100" alt="Music Image">
                             <p class="carousel-caption-below">{{ tracks[i*6 + j]['name'] }}</p>
                         </div>

@@ -1,8 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}Register{% endblock %}
-
 {% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container-special">
+        <div class="login-box">
+            <h2>Sign Up</h2>
+            <form method="POST">
+                <div class="user-box">
+                    <input type="text" name="username" required="">
+                    <label>Username</label>
+                </div>
+                <div class="user-box">
+                    <input type="password" name="password" required="">
+                    <label>Password</label>
+                </div>
+                <div class="user-box">
+                    <input type="email" name="email" required="">
+                    <label>Email</label>
+                </div>
+                <button type="submit" class="login-button">SIGN UP</button>
+                <div class="signup-link">
+                    Already registered?
+                    <a href="{{ url_for('main.login') }}">Login here!</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
 {% endblock %}
 
 {% block scripts %}{% endblock %}
