@@ -7,7 +7,7 @@ import base64
 from backend.comments_forms import CommentForm
 from backend.spotify_authentication import create_spotify_login_link, callback_result
 from datetime import datetime, timedelta
-from flask import Flask, render_template, request, jsonify, session, url_for, flash, redirect
+from flask import Flask, render_template, request, jsonify, session, url_for, flash, redirect, Response
 from flask_sqlalchemy import SQLAlchemy #NOTE: i am using the flask_sqlalchemy, but im sure this code can be reafactored to use the engine method from codio
 
 template_dir = os.path.abspath('frontend/templates') # this just specifies the location of the templates folder, so you only have to put file name when using "render_template('File_name')"
@@ -137,10 +137,12 @@ def control_playback():
     # playlists = response.json()
 
     currently_playing_response = requests.get(API_BASE_URL + 'me/player/currently-playing', headers=headers)
-    playback_status = ''
+    playback_status = {'progress_ms': 0, 'item':{'duration_ms':1}}
     if currently_playing_response.status_code == 204:
-        flash("there is no media currently playing")
-        print("there is no media currently playing")
+        return Response(
+            "There is no currently playing music",
+            status=400,
+        )
     else:
         playback_status = currently_playing_response.json()
     
