@@ -14,9 +14,11 @@ def home():
     shows = get_popular_tv_shows_for_carousel()
     return render_template('home.html', movies=movies, tracks=tracks, shows=shows)
 
+
 @main.route('/movies')
 def movies():
     return render_template('movies.html', movies=movies)
+
 
 @main.route('/music')
 def music_search():
