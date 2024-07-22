@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, flash
 from backend.database import db
 from backend.movie_api import get_movie_details, search_movies, get_popular_movies
+from backend.tv_show_api import get_popular_tv_shows_for_carousel
 from backend.music_api import get_home_tracks, get_search_tracks, get_track_info
 from backend.search_form import SearchForm
 
@@ -11,12 +12,16 @@ main = Blueprint('main', __name__)
 def home():
     movies = get_popular_movies()
     tracks = get_home_tracks()
-    return render_template('home.html', movies=movies, tracks=tracks)
+    shows = get_popular_tv_shows_for_carousel()
+    return render_template('home.html', movies=movies, tracks=tracks, shows=shows)
+
 
 @main.route('/movies')
 def movies_search():
     return render_template('movies_search.html')
 
+
+@main.route('/music')
 @main.route('/music', methods=['GET','POST'])
 def music_search():
     form = SearchForm()
@@ -59,6 +64,9 @@ def song_detail(song_id):
 @main.route('/shows')
 def shows_search():
     return render_template('shows_search.html')
+
+
+
 
 # @main.route('/music_search', methods=['GET'])
 # def music_search():
