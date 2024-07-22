@@ -2,3 +2,5 @@ Flask
 Flask-SQLAlchemy
 python-dotenv
 requests
+SearchForm
+flask_wtf
