@@ -2,3 +2,6 @@ Flask
 Flask-SQLAlchemy
 python-dotenv
 requests
+wtforms
+flask_wtf
+Flask-Migrate

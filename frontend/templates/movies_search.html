@@ -9,7 +9,9 @@
     <!-- Search Header -->
     <div class="container mt-5">
         <h1 class="text-center mb-4">Rate Your Favorite Movie</h1>
-        
+        {% if search_query %}
+        <h2 class="text-center mb-4">Here are the search results for "{{ search_query }}"</h2>
+        {% endif %}
         <!-- Search Form -->
         <form action="{{ url_for('main.movies_search') }}" method="get">
             <div class="input-group mb-4">
@@ -21,24 +23,28 @@
         </form>
     </div>
 
-    <!-- Display Movie Covers (Placeholder) -->
+    <!-- Display Movie Covers -->
     <div class="container">
         <div class="row">
-            {% for movie in results %}
+            {% for movie in movies %}
             <div class="col-md-3 mb-4">
-                <div class="card">
-                    <img src="{{ movie.cover_image }}" class="card-img-top" alt="{{ movie.title }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ Movie.title }}</h5>
-                        <p class="card-text">{{ Movie.artist }}</p>
+                <a href="{{ url_for('main.movie', movie_id=movie.id) }}" class="card-link">
+                    <div class="card">
+                        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ movie.title }}</h5>
+                            <p class="card-text">{{ movie.release_date }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+            {% else %}
+            <p>No movies found.</p>
             {% endfor %}
         </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
-    <!-- <script src="{{ url_for('static', filename='js/movie-search.js') }}"></script> -->
+    <!-- <script src="{{ url_for('static', filename='js/movie_search.js') }}"></script> -->
 {% endblock %}

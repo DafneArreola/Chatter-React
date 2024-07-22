@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+    <title>Chatter</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block title %}{% endblock %}
@@ -15,7 +15,7 @@
         <nav class="navbar navbar-expand-lg navbar-custom">
             <a class="navbar-brand text-white" href="{{ url_for('main.home') }}">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="d-inline-block align-top" style="height: 40px; padding-right: 5px;">
-                My Website
+                Chatter
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

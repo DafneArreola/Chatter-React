@@ -1,86 +1,48 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const movieId = window.location.pathname.split('/').pop();
-    fetchMovieDetails(movieId);
-    setupRatingForm(movieId);
-    setupCommentForm(movieId);
-    setupTimestampScroll(movieId);
+document.addEventListener('DOMContentLoaded', () => {
+    const playbackBar = document.querySelector('.playback-bar input[type="range"]');
+    const currentTimeDisplay = document.getElementById('current-time');
+    const totalTimeDisplay = document.getElementById('total-time');
+
+    playbackBar.addEventListener('input', () => {
+        const totalSeconds = parseInt(playbackBar.value, 10);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        currentTimeDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    });
+
+    // Initialize total time
+    const totalRuntimeSeconds = parseInt(playbackBar.max, 10);
+    const totalHours = Math.floor(totalRuntimeSeconds / 3600);
+    const totalMinutes = Math.floor((totalRuntimeSeconds % 3600) / 60);
+    const totalSeconds = totalRuntimeSeconds % 60;
+
+    totalTimeDisplay.textContent = `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+
+    const stars = document.querySelectorAll('.stars label');
+    let currentRating = 0;
+
+    stars.forEach((star, index) => {
+        star.addEventListener('mouseover', () => {
+            stars.forEach((s, i) => {
+                s.style.color = i <= index ? 'gold' : '#ccc';
+            });
+        });
+
+        star.addEventListener('mouseout', () => {
+            stars.forEach((s, i) => {
+                s.style.color = i < currentRating ? 'gold' : '#ccc';
+            });
+        });
+
+        star.addEventListener('click', () => {
+            currentRating = index + 1;
+            document.querySelector(`input[name="rating"][value="${currentRating}"]`).checked = true;
+            stars.forEach((s, i) => {
+                s.style.color = i < currentRating ? 'gold' : '#ccc';
+            });
+        });
+    });
+
 });
-
-function fetchMovieDetails(movieId) {
-    fetch(`/movie/${movieId}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('movie-title').textContent = data.title;
-            document.getElementById('movie-poster').src = `https://image.tmdb.org/t/p/w500/${data.poster_path}`;
-            document.getElementById('movie-overview').textContent = data.overview;
-        });
-}
-
-function setupRatingForm(movieId) {
-    document.getElementById('rating-form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const rating = document.getElementById('rating').value;
-        fetch('/rate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                user_id: 1,  // Replace with actual user ID
-                media_id: movieId,
-                rating: rating
-            })
-        }).then(response => response.json())
-          .then(data => {
-              alert(data.message);
-          });
-    });
-}
-
-function setupCommentForm(movieId) {
-    document.getElementById('comment-form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const timestamp = document.getElementById('timestamp').value;
-        const content = document.getElementById('comment').value;
-        fetch('/comment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                user_id: 1,  // Replace with actual user ID
-                media_id: movieId,
-                timestamp: timestamp,
-                content: content
-            })
-        }).then(response => response.json())
-          .then(data => {
-              alert(data.message);
-              fetchComments(movieId, timestamp);
-          });
-    });
-}
-
-function setupTimestampScroll(movieId) {
-    const timestampRange = document.getElementById('timestamp-range');
-    const timestampLabel = document.getElementById('timestamp-label');
-    
-    timestampRange.addEventListener('input', function () {
-        timestampLabel.textContent = this.value;
-        fetchComments(movieId, this.value);
-    });
-}
-
-function fetchComments(movieId, timestamp) {
-    fetch(`/comments/${movieId}/${timestamp}`)
-        .then(response => response.json())
-        .then(data => {
-            const commentList = document.getElementById('comment-list');
-            commentList.innerHTML = data.map(comment => `
-                <div class="comment">
-                    <p><strong>User ${comment.user_id}</strong>: ${comment.content}</p>
-                    <p class="text-muted">${new Date(comment.created_at).toLocaleString()}</p>
-                </div>
-            `).join('');
-        });
-}

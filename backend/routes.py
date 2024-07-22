@@ -1,21 +1,68 @@
-from flask import Blueprint, request, render_template, flash
+from flask import Blueprint, request, render_template, flash, redirect, url_for, jsonify
 from backend.database import db
-from backend.movie_api import get_movie_details, search_movies, get_popular_movies
+from backend.models import Comment
+from backend.movie_api import fetch_movies, search_movies, fetch_discover_movies, fetch_movie_details
 from backend.music_api import get_home_tracks, get_search_tracks, get_track_info
 from backend.search_form import SearchForm
 
 main = Blueprint('main', __name__)
 
-
 @main.route('/')
 def home():
-    movies = get_popular_movies()
+    movies = fetch_movies()
+    if not movies:
+        return "Failed to fetch movies. Please try again later.", 500
     tracks = get_home_tracks()
     return render_template('home.html', movies=movies, tracks=tracks)
 
-@main.route('/movies')
+@main.route('/movies', methods=['GET'])
 def movies_search():
-    return render_template('movies_search.html')
+    query = request.args.get('q', '')
+    if query:
+        movies = search_movies(query)
+    else:
+        movies = fetch_discover_movies()
+    
+    return render_template('movies_search.html', movies=movies, search_query=query)
+
+@main.route('/movie/<int:movie_id>')
+def movie(movie_id):
+    movie = fetch_movie_details(movie_id=movie_id)
+    if 'status_code' in movie and movie['status_code'] == 34:
+        return redirect(url_for('main.movies_search'))
+    
+    return render_template('movie.html', movie=movie)
+
+@main.route('/submit_review/<int:movie_id>', methods=['POST'])
+def submit_review(movie_id):
+    rating = request.form.get('rating')
+    # Process the rating (e.g., save it to the database)
+    flash('Thank you for your review!', 'success')
+    return redirect(url_for('main.movie', movie_id=movie_id))
+
+from flask import request, jsonify
+
+@main.route('/comments', methods=['GET'])
+def get_comments():
+    movie_id = request.args.get('movie_id')
+    timestamp = int(request.args.get('timestamp', 0))
+    comments = Comment.query.filter_by(movie_id=movie_id, timestamp=timestamp).all()
+    comments_data = [{'timestamp': c.timestamp, 'text': c.text} for c in comments]
+    return jsonify(comments_data)
+
+@main.route('/submit_comment', methods=['POST'])
+def submit_comment():
+    data = request.get_json()
+    movie_id = data['movie_id']
+    text = data['text']
+    timestamp = data['timestamp']
+    new_comment = Comment(movie_id=movie_id, text=text, timestamp=timestamp)
+    db.session.add(new_comment)
+    db.session.commit()
+    return jsonify({'success': True})
+
+
+
 
 @main.route('/music', methods=['GET','POST'])
 def music_search():
@@ -59,16 +106,3 @@ def song_detail(song_id):
 @main.route('/shows')
 def shows_search():
     return render_template('shows_search.html')
-
-# @main.route('/music_search', methods=['GET'])
-# def music_search():
-#     query = request.args.get('q', '')
-#     results = search_songs(query)  # Replace with your actual search function
-#     return render_template('music_search_results.html', query=query)
-
-# @main.route('/song/<int:song_id>')
-# def song_detail(song_id):
-#     # Retrieve song details, comments, and other relevant data from the database
-#     song = db.get_song_by_id(song_id)
-#     comments = db.get_comments_for_song(song_id)
-#     return render_template('song_detail.html', song=song, comments=comments)

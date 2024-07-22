@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>{{ movie.title }} - Movie Details</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/movie.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ movie.title }}</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="img-fluid" alt="{{ movie.title }}">
+        </div>
+        <div class="col-md-8">
+            <h2>Overview</h2>
+            <p>{{ movie.overview }}</p>
+            <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+            <p><strong>Rating:</strong> {{ movie.vote_average }}</p>
+            <p><strong>Genres:</strong> {{ movie.genres | map(attribute='name') | join(', ') }}</p>
+        </div>
+    </div>
+
+    <!-- Star Rating System -->
+    <div class="star-rating mt-4">
+        <h3>Rate this movie:</h3>
+        <form action="{{ url_for('main.submit_review', movie_id=movie.id) }}" method="post">
+            <div class="stars">
+                {% for i in range(1, 11) %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i / 2 }}" />
+                    <label for="star{{ i }}" title="{{ i / 2 }} stars"></label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Review</button>
+        </form>
+    </div>
+
+    <!-- Playback Bar -->
+    <div class="playback-bar mt-4">
+        <h3>Playback Bar:</h3>
+        <input type="range" id="playback-bar" class="form-control-range" min="0" max="{{ movie.runtime * 60 }}" step="1" value="0">
+        <div class="playback-time">
+            <span id="current-time">00:00:00</span> / 
+            <span id="total-time"></span>
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments mt-4">
+        <h3>Comments:</h3>
+        <ul id="comments-list"></ul>
+        <form id="comment-form">
+            <input type="hidden" id="comment-timestamp">
+            <div class="form-group">
+                <label for="comment">Your Comment:</label>
+                <textarea class="form-control" id="comment" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Comment</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const movieId = {{ movie.id }};
+        const playbackBar = document.getElementById('playback-bar');
+        const currentTimeDisplay = document.getElementById('current-time');
+        const totalTimeDisplay = document.getElementById('total-time');
+        const commentForm = document.getElementById('comment-form');
+        const commentTimestamp = document.getElementById('comment-timestamp');
+        const commentsList = document.getElementById('comments-list');
+        
+        // Function to format time in HH:MM:SS
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Set total time display
+        totalTimeDisplay.textContent = formatTime(playbackBar.max);
+
+        // Update current time display and comment timestamp on input
+        playbackBar.addEventListener('input', () => {
+            currentTimeDisplay.textContent = formatTime(playbackBar.value);
+            commentTimestamp.value = playbackBar.value;
+            loadComments(playbackBar.value);
+        });
+
+        // Handle comment form submission
+        commentForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const commentText = document.getElementById('comment').value;
+            const timestamp = commentTimestamp.value;
+            if (commentText.trim()) {
+                await submitComment(commentText, timestamp);
+                document.getElementById('comment').value = ''; // Clear the comment textarea
+                loadComments(playbackBar.value); // Reload comments
+            }
+        });
+
+        // Load comments for the specified timestamp
+        async function loadComments(timestamp) {
+            const response = await fetch(`/comments?movie_id=${movieId}&timestamp=${timestamp}`);
+            const comments = await response.json();
+            commentsList.innerHTML = ''; // Clear existing comments
+            comments.forEach(comment => {
+                const li = document.createElement('li');
+                li.textContent = `${formatTime(comment.timestamp)}: ${comment.text}`;
+                commentsList.appendChild(li);
+            });
+        }
+
+        // Submit a new comment
+        async function submitComment(text, timestamp) {
+            await fetch(`/submit_comment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    movie_id: movieId,
+                    text: text,
+                    timestamp: timestamp,
+                }),
+            });
+        }
+
+        // Initial load of comments at time 0
+        loadComments(0);
+    });
+</script>
+
+{% endblock %}

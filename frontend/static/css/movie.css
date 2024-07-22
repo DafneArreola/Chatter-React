@@ -1,0 +1,95 @@
+/* movie.css */
+
+.container {
+    margin-top: 20px;
+}
+
+h1 {
+    font-weight: bold;
+}
+
+img {
+    border-radius: 5px;
+}
+
+.stars {
+    display: flex;
+    justify-content: flex-start;
+    margin: 10;
+}
+
+.stars input {
+    display: none;
+}
+
+.stars label {
+    position: relative;
+    width: 40px;
+    font-size: 3rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.stars label::before {
+    content: '\2605';
+    position: absolute;
+    opacity: 0;
+}
+
+.stars label:hover:before,
+.stars label:hover ~ label:before {
+    opacity: 1 !important;
+}
+
+.stars input[type="radio"]:checked ~ label:before {
+    opacity: 1;
+}
+
+.stars label.full:before {
+    opacity: 1;
+}
+
+.stars label.half::before {
+    content: '\2605';
+    position: absolute;
+    opacity: 1;
+    width: 50%;
+    overflow: hidden;
+}
+/* .stars label::before {
+    content: "\2605";
+    position: relative;
+    display: block;
+} */
+
+/* .stars label:hover,
+.stars label:hover ~ label,
+.stars input:checked ~ label {
+    color: #FFD700;
+} */
+
+/* .stars input:checked + label::before {
+    content: "\2605";
+    color: #FFD700;
+} */
+
+/* .stars input:checked + label:hover::before,
+.stars input:checked + label:hover ~ label::before,
+.stars input:checked ~ label:hover::before,
+.stars input:checked ~ label:hover ~ label::before {
+    color: #FFD700;
+} */
+
+/* Playback Bar */
+.playback-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.playback-time {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}

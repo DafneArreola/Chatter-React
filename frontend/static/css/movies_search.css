@@ -3,106 +3,50 @@
     padding: 0;
 }
 
-.hero {
-    position: relative;
-    height: 600px;
-    display: flex;
-    align-items: center; /* Centers items vertically */
-    justify-content: center; /* Centers content horizontally */
-    padding: 20px; /* Adds padding to create space around the content */
-    overflow: hidden;
-    background-color: #3b3086;
-    color: white;
-}
-
-.blob {
-    position: absolute;
-    width: 80%;
-    height: auto;
-    top: 0;
-    left: 0;
-    transform: translateY(-10%);
-    z-index: 0;
-    animation: pulsate 5s infinite;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
-}
-
-.blob svg {
+/* Hero Section Styling */
+.hero-section {
     width: 100%;
-    height: 100%;
-}
-
-.hero .content {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    display: flex;
-    align-items: center; /* Centers items vertically in their columns */
-    justify-content: space-between; /* Distributes space between columns */
-}
-
-.text-container {
+    height: 60vh; /* Take up 60% of the viewport height */
+    background-color: #333; /* Dark background color */
+    color: #fff; /* Text color */
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centers content vertically within the container */
-    width: 50%; /* Adjust width as needed */
-}
-
-.hero h1 {
-    font-size: 4.5em;
-    font-weight: bolder;
-    margin: 0; /* Remove margin to ensure proper vertical centering */
-    margin-right: 100px;
-    padding-left: 40px;
+    justify-content: center;
+    align-items: center;
     text-align: center;
 }
 
-.hero p {
-    font-size: 2em;
-    margin: 0; /* Remove margin to ensure proper vertical centering */
-    padding-right: 40px;
-    text-align: left;
+.hero-section h1 {
+    font-size: 3rem; /* Increase font size for header */
+    margin-bottom: 1rem;
 }
 
-.hero ul {
-    list-style-type: disc; /* Use disc bullets */
-    margin-left: 50px; /* Adds space from the left for the list */
-    padding-right: 40px;
+/* Style for the movie card */
+.card {
+    background-color: #333; /* Dark grey background */
+    color: #fff; /* White text color */
+    border: none; /* Remove card border */
+    border-radius: 8px; /* Rounded corners */
 }
 
-.hero li {
-    margin-bottom: 10px; /* Adds space between list items */
-    padding-right: 40px;
-    font-size: 1.6em;
+.card img {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
-@keyframes pulsate {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+.card .card-title {
+    font-weight: bold; /* Bold movie title */
 }
 
-.gradient-svg {
-    width: 100%;
-    height: auto;
+.card .card-text {
+    color: #bbb; /* Lighter text for movie overview */
 }
 
-.gradient-svg path {
-    fill: url(#blobGradient);
-    animation: gradient-animation 10s ease infinite;
+.container {
+    padding: 20px;
 }
 
-@keyframes gradient-animation {
-    0% {
-        fill: linear-gradient(115deg, #f9c6c9 0%, #f9a6c0 25%, #a2d9ff 50%, #9575cd 75%, #b39ddb 100%);
-    }
-    50% {
-        fill: linear-gradient(115deg, #b39ddb 0%, #9575cd 25%, #a2d9ff 50%, #f9a6c0 75%, #f9c6c9 100%);
-    }
-    100% {
-        fill: linear-gradient(115deg, #f9c6c9 0%, #f9a6c0 25%, #a2d9ff 50%, #9575cd 75%, #b39ddb 100%);
-    }
-}
-
-.blob svg path {
-    animation: gradient-animation 15s ease infinite;
+h2 {
+    font-size: 1.5rem;
+    margin-top: 20px;
 }

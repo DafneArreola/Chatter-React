@@ -24,7 +24,7 @@
             </div>
             <div class="content">
                 <div class="text-container">
-                    <h1>Welcome to My Website</h1>
+                    <h1>Welcome to Chatter</h1>
                 </div>
                 <div class="text-container">
                     <p>Your ultimate destination for discovering, rating, and sharing your thoughts on the latest Movies, TV shows, and Music.<br><br>
@@ -35,18 +35,18 @@
         </div>
     </main>
 
-    <!-- Carousel Section -->
+    <!-- Movies Carousel Section -->
     <section class="carousel-section">
         <h2>Trending Movies</h2>
         <div id="trendingMoviesCarousel" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
-                {% for i in range(3) %}
+                {% for i in range(0, movies|length, 6) %}
                 <div class="carousel-item {% if i == 0 %}active{% endif %}">
                     <div class="row">
-                        {% for j in range(6) %}
+                        {% for movie in movies[i:i+6] %}
                         <div class="col-md-2">
-                            <img src="https://via.placeholder.com/300x200?text=Movie+{{ i*6 + j + 1 }}" class="d-block w-100" alt="Movie Image">
-                            <p class="carousel-caption-below">Subtitle {{ i*6 + j + 1 }}</p>
+                            <img src="https://image.tmdb.org/t/p/w500{{ movie['poster_path'] }}" class="d-block w-100" alt="{{ movie['title'] }}">
+                            <p>{{ movie['title'] }}</p>
                         </div>
                         {% endfor %}
                     </div>
@@ -64,7 +64,7 @@
         </div>
     </section>
 
-    <!-- Carousel Section -->
+    <!-- Shows Carousel Section -->
     <section class="carousel-section">
         <h2>Trending Shows</h2>
         <div id="trendingShowsCarousel" class="carousel slide" data-ride="carousel">
@@ -93,7 +93,7 @@
         </div>
     </section>
 
-    <!-- Carousel Section -->
+    <!-- Music Carousel Section -->
     <section class="carousel-section">
         <h2>Trending Music</h2>
         <div id="trendingMusicCarousel" class="carousel slide" data-ride="carousel">
