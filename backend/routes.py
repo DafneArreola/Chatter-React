@@ -94,7 +94,7 @@ def login():
         if user and check_password_hash(user.password, password):
             session['username'] = user.username
             flash('Login successful!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('main.home'))
         else:
             flash('Invalid username or password', 'danger')
 
@@ -114,7 +114,7 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             flash('Registration successful! Please login.', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
 
     return render_template('register.html')
 
@@ -130,4 +130,4 @@ def register():
 def logout():
     session.pop('username', None)
     flash('You have been logged out', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
