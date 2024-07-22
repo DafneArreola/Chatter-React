@@ -136,18 +136,25 @@ def control_playback():
     # response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
     # playlists = response.json()
 
+    # makes rrequest to spotify api
     currently_playing_response = requests.get(API_BASE_URL + 'me/player/currently-playing', headers=headers)
+    # the dictionary i wanna return
     playback_status = {'progress_ms': 0, 'item':{'duration_ms':1}}
+
+    
+    # if no song is playing
     if currently_playing_response.status_code == 204:
-        return Response(
-            "There is no currently playing music",
-            status=400,
-        )
+        # return Response(
+        #     "There is no currently playing music",
+        #     status=400,
+        # )
+        print('fasfawefawefwef')
+    # if song is playing
     else:
         playback_status = currently_playing_response.json()
     
-    progress_ms = playback_status['progress_ms']
-    duration_ms = playback_status['item']['duration_ms']
+        progress_ms = playback_status['progress_ms']
+        duration_ms = playback_status['item']['duration_ms']
 
     return jsonify({'progress_ms': progress_ms,
                     'duration_ms': duration_ms
