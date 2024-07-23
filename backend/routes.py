@@ -77,7 +77,13 @@ def submit_review():
             print("UPDATED RATING")
         db.session.commit()
 
-    return redirect(url_for('main.movie', movie_id=media_id))
+    if media_type == 'movie':
+        return redirect(url_for('main.movie', movie_id=media_id))
+    if media_type == 'music':
+        return redirect(url_for('main.song_detail', song_id=media_id))
+    if media_type == 'show':
+        return redirect(url_for('main.show', movie_id=media_id))
+    
     # Process the rating (e.g., save it to the database)
     #flash('Thank you for your review!', 'success')
     #return redirect(url_for('main.movie', movie_id=movie_id))
@@ -110,8 +116,12 @@ def music_search():
 
     if form.validate_on_submit():
         results = get_search_tracks( form.name_search.data )
+        if len(results) == 1 and results[0] == False:
+            results = 'Result Not Found'
         print("$####################")
         print(results[0])
+    else:
+        results = get_home_tracks()
         
     return render_template('music_search.html', results=results, form=form)
 
@@ -234,13 +244,6 @@ def submit_comment():
         db.session.add(new_comment)
         db.session.commit()
 
-    if media_type == 'movie':
-        return redirect(url_for('main.movie', movie_id=media_id))
-    if media_type == 'music':
-        return redirect(url_for('main.song_detail', song_id=media_id))
-    if media_type == 'show':
-        return redirect(url_for('main.show', movie_id=media_id))
-    
 @main.route('/account')
 def account():
     if 'user_id' not in session:

@@ -72,3 +72,7 @@ span {
         make sure you have an empty gif */
     /*background-image: url('empty.gif');*/
 }  
+
+.no-results-found {
+    text-align: center;
+}

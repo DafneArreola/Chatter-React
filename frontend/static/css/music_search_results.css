@@ -20,4 +20,16 @@ h1 {
 
 h3 {
     margin-bottom: 1rem; /* Space below the search query */
+    text-align: center;
 }
+
+.no-results-found-container {
+    width: 100%;
+    text-align: center;
+}
+
+.no-results-found-text {
+    
+}
+
+

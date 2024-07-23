@@ -31,6 +31,7 @@
         </div>
 
         <!-- Rating Section -->
+<!--
         <div class="text-center mt-4">
             <h3>Rate this Song</h3>
             <div class="rating">
@@ -38,6 +39,21 @@
                     <span class="star" data-value="{{ i }}">&#9733;</span>
                 {% endfor %}
             </div>
+        </div>
+-->
+
+            <!-- Star Rating System -->
+        <div class="star-rating mt-4">
+            <h3>Rate this Song:</h3>
+            <form action="{{ url_for('main.submit_review', media_title=song['name'], media_id=song['id'], media_type='music') }}" method="post">
+                <div class="stars">
+                    {% for i in range(1, 6) %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i / 2 }}" />
+                        <label for="star{{ i }}" title="{{ i / 2 }} stars"></label>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit Review</button>
+            </form>
         </div>
 
         <!-- Progress Bar Section -->
@@ -94,7 +110,7 @@
 
 {% block scripts %}
 <script>
-    var id = {{ song['id'] }}
+    var id = `{{ song['id'] }}`
 </script>
 <script src="{{ url_for('static', filename='js/song.js') }}" defer></script>
 

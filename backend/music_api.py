@@ -93,6 +93,9 @@ def get_search_tracks(name):
     path = 'search' 
     params = f'q={name}&type=track&limit=50&market=US'
     response = call_spotify_api(path, params)
+    print(response)
+    if response.status_code != 200:
+        return [False]
     tracks = response.json()['tracks']['items']
 
     filtered_tracks = []
