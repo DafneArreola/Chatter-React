@@ -6,6 +6,8 @@ from backend.music_api import get_home_tracks, get_search_tracks, get_track_info
 from backend.search_form import SearchForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import User, Comment, Rating, Media
+from backend.tv_show_api import search_tv_shows
+
 
 main = Blueprint('main', __name__)
 
@@ -105,8 +107,21 @@ def song_detail(song_id):
     return render_template('song.html', song=song, comments=comments)
 
 @main.route('/shows')
+@main.route('/shows', methods=['GET','POST'])
 def shows_search():
-    return render_template('shows_search.html')
+    form = SearchForm()
+    results = []
+
+    if form.validate_on_submit():
+        query = form.name_search.data
+        results = search_tv_shows(query)
+        print("$####################")
+        if results:
+            print(results[0])
+        else:
+            print("No results found")
+
+    return render_template('shows_search.html', results=results, form=form)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
