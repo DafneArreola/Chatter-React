@@ -15,8 +15,8 @@ class Config:
     TV_API_KEY = os.getenv('TV_API_KEY')
     TV_ACCESS_TOKEN = os.getenv('TV_ACCESS_TOKEN')
 
-    MUSIC_CLIENT_ID = '1a9bd2df8c6c44afbbf527403e7306e3'
-    MUSIC_CLIENT_SECRET = 'edb1c825d83f4719b733d3b8ed05a4e9'
+    MUSIC_CLIENT_ID = os.getenv('MUSIC_CLIENT_ID')
+    MUSIC_CLIENT_SECRET = os.getenv('MUSIC_CLIENT_SECRET')
 
 
 
