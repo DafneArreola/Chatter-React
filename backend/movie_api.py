@@ -44,6 +44,7 @@ def search_movies(query):
         return []
 
 def fetch_movie_details(movie_id):
+    movie_id = int(movie_id)
     url = f'https://api.themoviedb.org/3/movie/{movie_id}?api_key={API_KEY}&language=en-US'
     
     response = requests.get(url)

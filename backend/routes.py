@@ -62,12 +62,11 @@ def submit_review():
     media = db.session.query(Media).filter(Media.id == media_id).first()
     rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.media_id == media_id).first()
 
-
     # create a media object if none is found
     if not media:
         media = Media(id=media_id, title=media_title, media_type=media_type)
 
-    # add comment, and assign it a user
+    # add rating if not present, and update if alr presnet
     if user and media:
         if not rating:
             new_rating = Rating(user_id=user.id, media_id=media.id, rating=rating_given)
@@ -116,15 +115,6 @@ def music_search():
         
     return render_template('music_search.html', results=results, form=form)
 
-@main.route('/temp')
-def temp():
-    id = request.args.get('id', None)
-    if id:
-        song_info = get_track_info(id)
-    else:
-        song_id = None
-    return render_template('temp.html', song_info=song_info)
-
 @main.route('/song/<song_id>')
 def song_detail(song_id):
     # Retrieve song details, comments, and other relevant data from the database
@@ -132,16 +122,16 @@ def song_detail(song_id):
     #comments = db.get_comments_for_song(song_id)
 
     # this is a placeholder for now, until we design the db 
-    comments = [{'username': 'egger',
-                 'text': 'when he said "so many racks they call me the bandman" i felt that',
-                 'timestamp': '5:55'
-                },
-                {'username': 'second user',
-                 'text': 'wowzers',
-                 'timestamp': '1:01'
-                }]
+    # comments = [{'username': 'egger',
+    #              'text': 'when he said "so many racks they call me the bandman" i felt that',
+    #              'timestamp': '5:55'
+    #             },
+    #             {'username': 'second user',
+    #              'text': 'wowzers',
+    #              'timestamp': '1:01'
+    #             }]
     print(song['artists'])
-    return render_template('song.html', song=song, comments=comments)
+    return render_template('song.html', song=song)
 
 @main.route('/shows')
 @main.route('/shows', methods=['GET','POST'])
@@ -210,6 +200,7 @@ def get_comments():
     comments = db.session.query(Comment).filter(Comment.media_id == media_id, Comment.timestamp == timestamp).all()
 
     comment_data = [{'username': comment.user.username, 'text': comment.text} for comment in comments]
+    #print(comment_data)
     return jsonify(comment_data)
 
 @main.route('/submit_comment', methods=['POST'])
@@ -243,7 +234,12 @@ def submit_comment():
         db.session.add(new_comment)
         db.session.commit()
 
-    return redirect(url_for('main.movie', movie_id=media_id))
+    if media_type == 'movie':
+        return redirect(url_for('main.movie', movie_id=media_id))
+    if media_type == 'music':
+        return redirect(url_for('main.song_detail', song_id=media_id))
+    if media_type == 'show':
+        return redirect(url_for('main.show', movie_id=media_id))
     
 @main.route('/account')
 def account():

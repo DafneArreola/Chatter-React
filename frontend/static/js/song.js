@@ -1,37 +1,52 @@
-// static/js/song.js
+// frontend/static/js/song.js
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Rating System
-    const stars = document.querySelectorAll('.star');
-    stars.forEach(star => {
-        star.addEventListener('click', function() {
-            const rating = this.dataset.value;
-            // Send rating to the server
-            console.log(`Rated ${rating} stars`);
+document.addEventListener('DOMContentLoaded', () => {
+    const playbackBar = document.querySelector('.playback-bar input[type="range"]'); 
+    const currentTimeDisplay = document.getElementById('current-time');
+    const totalTimeDisplay = document.getElementById('total-time');
+    const commentForm = document.getElementById('comment-form');
+    const commentsList = document.getElementById('comments-list');
+
+    playbackBar.addEventListener('input', () => {
+        const totalSeconds = parseInt(playbackBar.value, 10);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        currentTimeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        //console.log(currentTimeDisplay.textContent)
+        document.getElementById('comment-timestamp').value = playbackBar.value;
+        console.log('func works')
+    });
+
+    playbackBar.addEventListener('mouseup', () =>{
+        console.log('Mouse up event triggered');
+        fetch(`/comments?media_id=${id}&timestamp=${playbackBar.value}&media_type=song`)
+        .then(response => response.json())
+        .then(data => {
+            commentsList.innerHTML = '';
+            data.forEach(comment => {
+                const commentElement = document.createElement('li');
+                commentElement.textContent = `${comment.username}: ${comment.text}`;
+                commentsList.appendChild(commentElement);
+            });
+        });
+    })
+
+    commentForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(commentForm);
+
+        fetch(commentForm.action, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
         });
     });
 
-    // Comment Submission
-    document.getElementById('addComment').addEventListener('click', function() {
-        const commentInput = document.getElementById('commentInput');
-        const commentText = commentInput.value;
-        if (commentText) {
-            // Send comment to the server
-            console.log(`Comment added: ${commentText}`);
-            commentInput.value = '';
-        }
-    });
 
-    // Simulate Progress Bar
-    const progressBar = document.getElementById('progressBar');
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width >= 100) {
-            clearInterval(interval);
-        } else {
-            width++;
-            progressBar.style.width = `${width}%`;
-            progressBar.setAttribute('aria-valuenow', width);
-        }
-    }, 1000);
 });
+

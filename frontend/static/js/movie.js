@@ -8,17 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const commentsList = document.getElementById('comments-list');
 
     playbackBar.addEventListener('input', () => {
+        console.log("input event activated")
         const totalSeconds = parseInt(playbackBar.value, 10);
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
 
         currentTimeDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        //console.log(currentTimeDisplay.textContent)
+        console.log(currentTimeDisplay.textContent)
         document.getElementById('comment-timestamp').value = playbackBar.value;
     });
 
     playbackBar.addEventListener('mouseup', () =>{
+        console.log("mouse_up event triggered")
         fetch(`/comments?media_id=${id}&timestamp=${playbackBar.value}&media_type=movie`)
         .then(response => response.json())
         .then(data => {
