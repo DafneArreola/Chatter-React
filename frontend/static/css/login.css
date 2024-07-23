@@ -1,0 +1,12 @@
+.blob {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 30vmax;
+    height: auto;
+    z-index: -1;
+    transform: translateX(-50%);
+    transform-origin: 50% 50%;
+    animation: move 10s linear infinite;
+}
+

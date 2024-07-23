@@ -1,14 +1,11 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block title %}
+    <title>Login - Chatter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
+{% block content %}
 <body>
     <div class="container-special">
         <div class="login-box">
@@ -31,9 +28,25 @@
             </form>
         </div>
     </div>
+
+    <div class="blob">
+        <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f9c6c9" /> <!-- Pale Pink -->
+                    <stop offset="25%" stop-color="#f9a6c0" /> <!-- Light Pink -->
+                    <stop offset="50%" stop-color="#a2d9ff" /> <!-- Light Blue -->
+                    <stop offset="75%" stop-color="#9575cd" /> <!-- Medium Purple -->
+                    <stop offset="100%" stop-color="#b39ddb" /> <!-- Light Purple -->
+                </linearGradient>
+            </defs>
+            <path fill="url(#blobGradient)" d="M37,-59.5C48.5,-50.2,58.8,-40.8,59.2,-30C59.7,-19.1,50.3,-6.6,47.2,6C44.2,18.5,47.4,31.2,43.6,40.5C39.8,49.7,28.9,55.6,18.3,55.8C7.6,56,-2.8,50.5,-17.8,50.7C-32.8,50.8,-52.5,56.6,-59.6,50.5C-66.7,44.3,-61.4,26.2,-57.5,12.1C-53.6,-2.1,-51.3,-12.2,-47.8,-22.6C-44.3,-33,-39.6,-43.6,-31.4,-54.5C-23.3,-65.4,-11.6,-76.4,0.6,-77.3C12.7,-78.2,25.5,-68.8,37,-59.5Z" transform="translate(100 100)" />
+        </svg>            
+    </div>
 </body>
-</html>
 
 {% endblock %}
 
-{% block scripts %}{% endblock %}
+<!-- {% block scripts %}
+<script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
+{% endblock %} -->

@@ -104,9 +104,16 @@
     width: 100%;
 }
 
-.carousel-caption {
+.carousel-caption-below {
     margin-top: 10px;
     text-align: center;
+    color: white;
+    font-size: medium;
+    font-weight: bold;
+}
+
+.col-md-2 a{
+    color: white;
 }
 
 /* Carousel Controls */
