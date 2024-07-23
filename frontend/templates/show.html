@@ -1,8 +1,8 @@
-<!-- templates/show.html -->
+<!-- templates/show_details.html -->
 {% extends "base.html" %}
 
 {% block title %}
-    <title>Show Details - My Website</title>
+    <title>{{ show.title }} - Show Details</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/show.css') }}">
 {% endblock %}
 
@@ -11,26 +11,38 @@
     <div class="row">
         <!-- Show Poster -->
         <div class="col-md-4">
-            <img src="{{ Show.poster_url }}" alt="{{ show.title }}" class="img-fluid">
+            <img src="{{ show.poster_url }}" alt="{{ show.title }}" class="img-fluid">
         </div>
         <!-- Show Details -->
         <div class="col-md-8">
             <h1>{{ show.title }}</h1>
             <p>{{ show.info }}</p>
-            <!-- Rating Section -->
-            <div class="rating">
-                <h3>Rate this Show:</h3>
-                <div class="stars">
-                    {% for i in range(1, 6) %}
-                        <span class="star" data-value="{{ i }}">&#9733;</span>
+            <!-- Seasons Dropdown -->
+            <div class="seasons mt-4">
+                <h3>Seasons</h3>
+                <div id="accordion">
+                    {% for season in show.seasons %}
+                        <div class="card mt-2">
+                            <div class="card-header" id="heading{{ season.season_number }}">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ season.season_number }}" aria-expanded="true" aria-controls="collapse{{ season.season_number }}">
+                                        Season {{ season.season_number }}: {{ season.name }}
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse{{ season.season_number }}" class="collapse" aria-labelledby="heading{{ season.season_number }}" data-parent="#accordion">
+                                <div class="card-body">
+                                    <ul>
+                                        {% for episode in season.episodes %}
+                                        <a href="{{ url_for('main.episode_details', show_id=show.id, season_number=season.season_number, episode_number=episode.number) }}">   
+                                            <li>Episode {{ episode.number }}: {{ episode.title }}</li>
+                                        </a>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     {% endfor %}
-                </div>
-            </div>
-            <!-- Timeline Section -->
-            <div class="timeline mt-4">
-                <input type="range" class="timeline-slider" min="0" max="{{ show.duration }}" step="1" value="0">
-                <div class="comments">
-                    <!-- Comments will be dynamically inserted here -->
                 </div>
             </div>
         </div>

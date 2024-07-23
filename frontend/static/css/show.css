@@ -1,0 +1,52 @@
+/* static/css/show.css */
+
+.seasons {
+    margin-top: 20px;
+}
+
+/* Style for the collapsible card component */
+.card {
+    background-color: #25274D; /* background for the card */
+    color: #fff; /* White text color */
+    border: 1px solid #3a3c5e; /* Slightly lighter border color */
+}
+
+.card-header {
+    background-color: #3a3c5e; /* Slightly lighter gray for the header */
+}
+
+.card-header button{
+    color: #fff; /* White text color on hover and focus */
+    text-decoration: none; /* Remove underline on hover */
+}
+
+/* Ensure the button text remains white on hover */
+.card-header button:hover,
+.card-header button:focus {
+    color: #fff; /* White text color on hover and focus */
+    text-decoration: underline; /* Remove underline on hover */
+}
+
+.card-body {
+    background-color: #25274D; /*background for the body */
+    color: #fff; /* White text color */
+}
+
+.card-body ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.card-body ul li {
+    margin: 5px 0;
+}
+
+.card-body a {
+    color: #fff; /* White text color for links */
+    text-decoration: none; /* Remove underline from links */
+}
+
+.card-body a:hover {
+    text-decoration: underline; /* Underline on hover for better UX */
+    background-color:#fff
+}

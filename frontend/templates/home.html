@@ -66,18 +66,20 @@
         </div>
     </section>
 
-    <!-- Shows Carousel Section -->
+    
     <section class="carousel-section">
-        <h2>Trending Shows</h2>
+        <h2>Trending TV Shows</h2>
         <div id="trendingShowsCarousel" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
-                {% for i in range(3) %}
+                {% for i in range(0, shows|length, 6) %}
                 <div class="carousel-item {% if i == 0 %}active{% endif %}">
                     <div class="row">
-                        {% for j in range(6) %}
+                        {% for show in shows[i:i+6] %}
                         <div class="col-md-2">
-                            <img src="{{ shows[i*6 + j]['image'] }}" class="d-block w-100" alt="Show Image">
-                            <p class="carousel-caption-below">{{ shows[i*6 + j]['name'] }}</p>
+                            <a href="{{ url_for('main.show_details', show_id=show['id']) }}">
+                                <img src="https://image.tmdb.org/t/p/w500{{ show['poster_path'] }}" class="d-block w-100" alt="{{ show['name'] }}">
+                                <p class="carousel-caption-below">{{ show['name'] }}</p>
+                            </a>
                         </div>
                         {% endfor %}
                     </div>
@@ -94,6 +96,7 @@
             </a>
         </div>
     </section>
+    
 
     <!-- Music Carousel Section -->
     <section class="carousel-section">

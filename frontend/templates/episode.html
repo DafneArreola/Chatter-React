@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>{{ episode.title }} - Episode Details</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/episode.css') }}">
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ show.title }} : {{episode['name'] }}</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <img src="https://image.tmdb.org/t/p/w500{{ poster_url }}" class="img-fluid" alt="{{ episode.title }}">
+        </div>
+        <div class="col-md-8">
+            <h2> Overview </h2>
+            <p>{{ episode.overview }}</p>
+            <p><strong>Season:</strong> {{ season_number }}</p>
+            <p><strong>Air Date:</strong> {{ episode.air_date }}</p>
+            <p><strong>Rating:</strong> {{ episode.vote_average }}</p>
+        </div>
+    </div>
+
+    <!-- Star Rating System -->
+    <div class="star-rating mt-4">
+        <h3>Rate this episode:</h3>
+        <form action="{{ url_for('main.submit_review', media_title=episode.title, media_id=episode.id, media_type='episode') }}" method="post">
+            <div class="stars">
+                {% for i in range(1, 6) %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i / 2 }}" />
+                    <label for="star{{ i }}" title="{{ i / 2 }} stars"></label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Review</button>
+        </form>
+    </div>
+
+    <!-- Playback Bar -->
+    <div class="playback-bar mt-4">
+        <h3>Playback Bar:</h3>
+        <input type="range" id="playback-bar" class="form-control-range" min="0" max="{{ episode.runtime * 60 }}" step="1" value="0">
+        <div class="playback-time">
+            <span id="current-time">00:00:00</span> / 
+            <span id="total-time"></span>
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments mt-4">
+        <h3>Comments:</h3>
+        <ul id="comments-list"></ul>
+        <form id="comment-form" action="{{ url_for('main.submit_comment', media_title=episode.title, media_id=episode.id, media_type='episode') }}" method="post">
+            <input type="hidden" name="media_id" value="{{ episode.id }}">
+            <input type="hidden" id="comment-timestamp" name="timestamp" value="0">
+            <div class="form-group">
+                <label for="comment">Your Comment:</label>
+                <textarea class="form-control" id="comment" name="text" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Comment</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    `var id = {{ episode.id }}`
+</script>
+<script src="{{ url_for('static', filename='js/episode.js') }}" defer></script>
+{% endblock %}

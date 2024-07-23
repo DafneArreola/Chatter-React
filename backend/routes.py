@@ -6,7 +6,7 @@ from backend.music_api import get_home_tracks, get_search_tracks, get_track_info
 from backend.search_form import SearchForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import User, Comment, Rating, Media
-from backend.tv_show_api import search_tv_shows
+from backend.tv_show_api import get_popular_tv_shows_for_carousel, get_tv_show_details, fetch_show_details, fetch_episode_details, search_tv_shows, get_popular_tv_shows, fetch_season_episodes, fetch_show_poster, fetch_shows
 
 import json
 
@@ -16,10 +16,8 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def home():
     movies = fetch_movies()
-    if not movies:
-        return "Failed to fetch movies. Please try again later.", 500
     tracks = get_home_tracks()
-    shows = get_popular_tv_shows_for_carousel()
+    shows = fetch_shows()
     return render_template('home.html', movies=movies, tracks=tracks, shows=shows)
 
 
@@ -83,26 +81,6 @@ def submit_review():
     #flash('Thank you for your review!', 'success')
     #return redirect(url_for('main.movie', movie_id=movie_id))
 
-from flask import request, jsonify
-
-# @main.route('/comments', methods=['GET'])
-# def get_comments():
-#     movie_id = request.args.get('movie_id')
-#     timestamp = int(request.args.get('timestamp', 0))
-#     comments = Comment.query.filter_by(movie_id=movie_id, timestamp=timestamp).all()
-#     comments_data = [{'timestamp': c.timestamp, 'text': c.text} for c in comments]
-#     return jsonify(comments_data)
-
-# @main.route('/submit_comment', methods=['POST'])
-# def submit_comment():
-#     data = request.get_json()
-#     movie_id = data['movie_id']
-#     text = data['text']
-#     timestamp = data['timestamp']
-#     new_comment = Comment(movie_id=movie_id, text=text, timestamp=timestamp)
-#     db.session.add(new_comment)
-#     db.session.commit()
-#     return jsonify({'success': True})
 
 @main.route('/music', methods=['GET','POST'])
 def music_search():
@@ -143,22 +121,61 @@ def song_detail(song_id):
     print(song['artists'])
     return render_template('song.html', song=song, comments=comments)
 
-@main.route('/shows')
-@main.route('/shows', methods=['GET','POST'])
+# @main.route('/shows', methods=['GET','POST'])
+# def shows_search():
+#     form = SearchForm()
+#     results = []
+
+#     if form.validate_on_submit():
+#         query = form.name_search.data
+#         results = search_tv_shows(query)
+#         print("$####################")
+#         if results:
+#             print(results[0])
+#         else:
+#             print("No results found")
+
+#     return render_template('shows_search.html', results=results, form=form)
+
+@main.route('/shows', methods=['GET'])
 def shows_search():
-    form = SearchForm()
-    results = []
+    query = request.args.get('q', '')
+    if query:
+        shows = search_tv_shows(query)
+    else:
+        shows = get_popular_tv_shows()
+    
+    return render_template('shows_search.html', shows=shows, search_query=query)
 
-    if form.validate_on_submit():
-        query = form.name_search.data
-        results = search_tv_shows(query)
-        print("$####################")
-        if results:
-            print(results[0])
-        else:
-            print("No results found")
+@main.route('/show/<int:show_id>')
+def show_details(show_id):
+    show_data = get_tv_show_details(show_id)
+    show = {
+        'id': show_data['id'],
+        'title': show_data['name'],
+        'poster_url': f"https://image.tmdb.org/t/p/w500{show_data['poster_path']}" if show_data['poster_path'] else None,
+        'info': show_data['overview'],
+        'seasons': [
+            {
+                'season_number': season['season_number'],
+                'name': season['name'],
+                'episodes': fetch_season_episodes(show_id, season['season_number'])
+            }
+            for season in show_data['seasons']
+        ]
+    }
+    return render_template('show.html', show=show)
 
-    return render_template('shows_search.html', results=results, form=form)
+@main.route('/show/<int:show_id>/season/<int:season_number>/episode/<int:episode_number>')
+def episode_details(show_id, season_number, episode_number):
+    poster_url = fetch_show_poster(show_id, season_number)
+    episode = fetch_episode_details(show_id, season_number, episode_number)
+    show_data = get_tv_show_details(show_id)
+    show = {
+        'id': show_data['id'],
+        'title': show_data['name']
+    }
+    return render_template('episode.html', episode=episode, show_id=show_id, season_number=season_number, poster_url=poster_url, show=show)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():

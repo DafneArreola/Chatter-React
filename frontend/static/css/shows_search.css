@@ -1,0 +1,52 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* Hero Section Styling */
+.hero-section {
+    width: 100%;
+    height: 60vh; /* Take up 60% of the viewport height */
+    background-color: #333; /* Dark background color */
+    color: #fff; /* Text color */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3rem; /* Increase font size for header */
+    margin-bottom: 1rem;
+}
+
+/* Style for the movie card */
+.card {
+    background-color: #333; /* Dark grey background */
+    color: #fff; /* White text color */
+    border: none; /* Remove card border */
+    border-radius: 8px; /* Rounded corners */
+}
+
+.card img {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.card .card-title {
+    font-weight: bold; /* Bold movie title */
+}
+
+.card .card-text {
+    color: #bbb; /* Lighter text for movie overview */
+}
+
+.container {
+    padding: 20px;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-top: 20px;
+}

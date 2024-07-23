@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    <title>TV Shows Search - My Website</title>
+    <title>Shows Search - Chatter</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/shows_search.css') }}">
 {% endblock %}
 
@@ -9,50 +9,40 @@
     <!-- Search Header -->
     <div class="container mt-5">
         <h1 class="text-center mb-4">Rate Your Favorite Show</h1>
-
+        {% if search_query %}
+        <h2 class="text-center mb-4">Here are the search results for "{{ search_query }}"</h2>
+        {% endif %}
         <!-- Search Form -->
         <form action="{{ url_for('main.shows_search') }}" method="get">
             <div class="input-group mb-4">
-                <input type="text" class="form-control form-control-lg" name="q" placeholder="Search for TV Shows..." aria-label="Search for TV shows">
+                <input type="text" class="form-control form-control-lg" name="q" placeholder="Search for Shows..." aria-label="Search for movies">
                 <div class="input-group-append">
                     <button class="btn btn-primary btn-lg" type="submit">Search</button>
                 </div>
             </div>
         </form>
     </div>
-<!--        <div class="container mt-5">-->
-<!--            <h1 class="text-center mb-4">Rate Your Favorite Show</h1>-->
 
-<!--            &lt;!&ndash; Search Form &ndash;&gt;-->
-<!--            <form action="" method="POST">-->
-<!--                {{ form.hidden_tag() }}-->
-<!--                <div class="input-group mb-4">-->
-<!--                    {{ form.name_search(class="form-control form-control-lg") }}-->
-<!--                    <div class="input-group-append">-->
-<!--                        {{ form.submit(class="btn btn-primary btn-lg") }}-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </form>-->
-<!--        </div>-->
-
-    <!-- Display Show Covers (Placeholder) -->
+    <!-- Display Show Covers -->
     <div class="container">
         <div class="row">
-            {% for show in results %}
+            {% for show in shows %}
             <div class="col-md-3 mb-4">
-                <div class="card">
-                    <img src="{{ show.cover_image }}" class="card-img-top" alt="{{ show.title }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ show.title }}</h5>
-                        <p class="card-text">{{ show.artist }}</p>
+                <a href="{{ url_for('main.show_details', show_id=show.id) }}" class="card-link">
+                    <div class="card">
+                        <img src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}" class="card-img-top" alt="{{ show.name }}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ show.name }}</h5>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+            {% else %}
+            <p>No shows found.</p>
             {% endfor %}
         </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
-    <!-- <script src="{{ url_for('static', filename='js/show-search.js') }}"></script> -->
 {% endblock %}
