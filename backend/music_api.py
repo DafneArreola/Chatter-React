@@ -42,6 +42,26 @@ def create_artists_string(artists):
         artist_names_str += name + ', '
     return artist_names_str[:-2]
 
+def convert_ms_to_time(ms):
+    total_seconds = ms / 1000
+
+    minutes = total_seconds // 60
+    seconds = total_seconds - (minutes * 60)
+
+    minutes = int(minutes)
+    if minutes < 10:
+        minutes = '0' + str(minutes)
+    else:
+        minutes = str(minutes)
+
+    seconds = int(seconds)
+    if seconds < 10:
+        seconds = '0' + str(seconds)
+    else:
+        seconds = str(seconds)
+
+    return f'{minutes}:{seconds}'
+
 
 
 ########################
@@ -73,6 +93,9 @@ def get_search_tracks(name):
     path = 'search' 
     params = f'q={name}&type=track&limit=50&market=US'
     response = call_spotify_api(path, params)
+    print(response)
+    if response.status_code != 200:
+        return [False]
     tracks = response.json()['tracks']['items']
 
     filtered_tracks = []
@@ -90,15 +113,31 @@ def get_track_info(id):
 
     path = f'tracks/{id}' 
     response = call_spotify_api(path, params='')
-    track = response.json()    
+    track = response.json() 
+
+    ## DELETE ## 
+    del track['album']["available_markets"]
+    del track["available_markets"]
+    
+    #json.dumps(response.json(), indent=3 )
+    with open("Output.txt", "w", encoding = "UTF-8") as f:
+        f.write(json.dumps(track, indent=3 ))
+    ############   
 
     filtered_track={}
+    filtered_track['id'] = track['id']
     filtered_track['name'] = track['name']
     filtered_track['image'] = track['album']['images'][1]['url']
     filtered_track['artists'] = create_artists_string(track['artists'])
+    filtered_track['album_type'] = track['album']['album_type']
+    filtered_track['album_name'] = track['album']['name']
+    filtered_track['release_date'] = track['album']['release_date']
+    filtered_track['duration'] = convert_ms_to_time(int(track['duration_ms']))
+    filtered_track['duration_ms'] = track['duration_ms']
+
+    print(filtered_track['album_type'])
+    
 
     return filtered_track   
 
-    # json.dumps(response.json(), indent=3 )
-    # with open("Output.txt", "a", encoding = "UTF-8") as f:
-    #     f.write(json.dumps(filtered_tracks, indent=3 ))
+

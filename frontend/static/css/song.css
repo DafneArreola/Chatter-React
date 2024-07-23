@@ -11,27 +11,67 @@ img.img-fluid {
     display: inline-block;
 }
 
-.star {
-    font-size: 2rem;
-    color: #ffd700; /* Gold color */
+.star-rating {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+
+.stars {
+    display: flex;
+    justify-content: flex-start;
+    margin: 10;
+}
+
+.stars input {
+    display: none;
+}
+
+.stars label {
+    position: relative;
+    width: 40px;
+    font-size: 3rem;
+    color: #ccc;
     cursor: pointer;
+    transition: color 0.2s;
 }
 
-.star:hover {
-    color: #ffcc00; /* Lighter gold */
+.stars label::before {
+    content: "\2605";
+    position: relative;
+    display: block;
 }
 
-/* Progress Bar */
-.progress {
-    height: 30px;
+.stars label:hover,
+.stars label:hover ~ label,
+.stars input:checked ~ label {
+    color: #FFD700;
 }
 
-.progress-bar {
-    background-color: #007bff; /* Blue color */
+.stars input:checked + label::before {
+    content: "\2605";
+    color: #FFD700;
 }
 
-/* Comments */
-.comment {
-    border-bottom: 1px solid #ccc;
-    padding: 10px 0;
+.stars input:checked + label:hover::before,
+.stars input:checked + label:hover ~ label::before,
+.stars input:checked ~ label:hover::before,
+.stars input:checked ~ label:hover ~ label::before {
+    color: #FFD700;
+}
+
+/* Playback Bar */
+.playback-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.playback-time {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }

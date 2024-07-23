@@ -10,7 +10,7 @@ class User(db.Model):
     ratings = db.relationship('Rating', backref='user', lazy=True)
 
 class Media(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(50), primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     media_type = db.Column(db.String(50), nullable=False)  # 'movie', 'show', 'track', etc.
     comments = db.relationship('Comment', backref='media', lazy=True)
@@ -20,7 +20,7 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     media_id = db.Column(db.Integer, db.ForeignKey('media.id'), nullable=False)  # Added ForeignKey
-    timestamp = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.Integer, nullable=False) # I think were storing seconds?
     text = db.Column(db.String(500), nullable=False)
     
 class Rating(db.Model):

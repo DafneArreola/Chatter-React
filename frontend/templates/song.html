@@ -16,11 +16,22 @@
             <h1>{{ song['name'] }}</h1>
             
             <!-- Song Info -->
-            <p>{{ song['artists'] }}</p>
-            <p>other info can go here</p>
+            <p><strong>Artist:</strong> {{ song['artists'] }}</p>
+
+            {% if song['album_type'] == 'album' %}
+            <p><strong>Album:</strong> {{ song['album_name']}}</p>
+            {% endif %}
+
+            {% if song['album_type'] == 'single' %}
+            <p><strong>Single</strong></p>
+            {% endif %}
+
+            <p><strong>Release Date:</strong> {{ song['release_date']}}</p>
+            <p><strong>Duration:</strong> {{ song['duration']}}</p>
         </div>
 
         <!-- Rating Section -->
+<!--
         <div class="text-center mt-4">
             <h3>Rate this Song</h3>
             <div class="rating">
@@ -29,18 +40,46 @@
                 {% endfor %}
             </div>
         </div>
+-->
+
+            <!-- Star Rating System -->
+        <div class="star-rating mt-4">
+            <h3>Rate this Song:</h3>
+            <form action="{{ url_for('main.submit_review', media_title=song['name'], media_id=song['id'], media_type='music') }}" method="post">
+                <div class="stars">
+                    {% for i in range(1, 6) %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i / 2 }}" />
+                        <label for="star{{ i }}" title="{{ i / 2 }} stars"></label>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Submit Review</button>
+            </form>
+        </div>
 
         <!-- Progress Bar Section -->
+         <!--
         <div class="mt-4">
             <h3>Comments</h3>
             <input type="text" id="commentInput" class="form-control mb-2" placeholder="Add a comment...">
             <button id="addComment" class="btn btn-primary">Submit</button>
         </div>
+        
         <div class="progress mt-3">
             <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="{{ song.duration }}"></div>
         </div>
+        -->
+        <div class="playback-bar mt-4">
+            <h3>Playback Bar:</h3>
+            <input type="range" id="playback-bar" class="form-control-range" min="0" max="{{ song['duration_ms'] // 1000}}" step="1" value="0">
+            <div class="playback-time">
+                <span id="current-time">00:00</span> / 
+                <span id="total-time">{{ song['duration'] }}</span>
+            </div>
+        </div>
         
+
         <!-- Comments Display -->
+<!--
         <div id="comments" class="mt-3">
             {% for comment in comments %}
                 <div class="comment">
@@ -49,9 +88,30 @@
             {% endfor %}
         </div>
     </div>
+-->
+
+    <!-- Comments Section -->
+    <div class="comments mt-4">
+        <h3>Comments:</h3>
+        <ul id="comments-list"></ul>
+        <form id="comment-form" action="{{ url_for('main.submit_comment', media_title=song['name'], media_id=song['id'], media_type='music') }}" method="post">
+            <input type="hidden" name="media_id" value="{{ song['id'] }}">
+            <input type="hidden" id="comment-timestamp" name="timestamp" value="0">
+            <div class="form-group">
+                <label for="comment">Your Comment:</label>
+                <textarea class="form-control" id="comment" name="text" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Comment</button>
+        </form>
+    </div>
+</div>
 
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/song.js') }}"></script>
+<script>
+    var id = `{{ song['id'] }}`
+</script>
+<script src="{{ url_for('static', filename='js/song.js') }}" defer></script>
+
 {% endblock %}
