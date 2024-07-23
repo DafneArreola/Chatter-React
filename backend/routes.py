@@ -149,6 +149,8 @@ def register():
         
         if User.query.filter_by(username=username).first():
             flash('Username already exists', 'danger')
+        elif User.query.filter_by(email=email).first():
+            flash('Email already exists', 'danger')
         else:
             new_user = User(username=username, password=generate_password_hash(password), email=email)
             db.session.add(new_user)

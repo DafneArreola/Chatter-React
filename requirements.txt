@@ -1,13 +1,10 @@
 Flask~=3.0.3
 Flask-SQLAlchemy
 python-dotenv
-
 requests
-<<<<<<< HEAD
 wtforms
 flask_wtf
 Flask-Migrate
-=======
 SearchForm
 flask_wtf
->>>>>>> refs/remotes/origin/main
+

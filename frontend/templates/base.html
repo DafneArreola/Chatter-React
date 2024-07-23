@@ -14,30 +14,33 @@
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-custom">
             <a class="navbar-brand text-white" href="{{ url_for('main.home') }}">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="d-inline-block align-top" style="height: 40px; padding-right: 5px;">
-                Chatter
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="d-inline-block align-top logo">
+                <span class="brand-name">Chatter</span>
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mr-auto"> <!-- Push items to the left -->
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav"> <!-- Center items -->
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('main.movies_search') }}">Movies</a>
+                        <a class="nav-link account-white" href="{{ url_for('main.movies_search') }}">Movies</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('main.shows_search') }}">TV Shows</a>
+                        <a class="nav-link account-white" href="{{ url_for('main.shows_search') }}">TV Shows</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('main.music_search') }}">Music</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto"> <!-- Push the Login link to the right -->
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('main.login') }}">Login</a>
+                        <a class="nav-link account-white" href="{{ url_for('main.music_search') }}">Music</a>
                     </li>
                 </ul>
             </div>
+            <ul class="navbar-nav ml-auto navbar-account"> <!-- Push the Login link to the right -->
+                <li class="nav-item">
+                    <a class="nav-link account-text" href="{{ url_for('main.account') }}">Account</a>
+                </li>
+                <li class="nav-item">
+                    <a class="login-button" href="{{ url_for('main.login') }}">Login</a>
+                </li>
+            </ul>
         </nav>
     
         <!-- Main content -->
@@ -49,11 +52,11 @@
         <!-- Footer -->
         <footer class="footer text-center">
             <div class="container">
-                <a href="#">Movies</a> |
-                <a href="#">TV Shows</a> |
-                <a href="#">Music</a> |
+                <a href="{{ url_for('main.movies_search') }}">Movies</a> |
+                <a href="{{ url_for('main.shows_search') }}">TV Shows</a> |
+                <a href="{{ url_for('main.music_search') }}">Music</a> |
                 <a href="{{ url_for('main.account') }}">Account</a> |
-                <a href="#">Login</a>
+                <a href="{{ url_for('main.login') }}">Login</a>
             </div>
         </footer>
     </div>
