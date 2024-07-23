@@ -24,7 +24,7 @@
     <!-- Star Rating System -->
     <div class="star-rating mt-4">
         <h3>Rate this movie:</h3>
-        <form action="{{ url_for('main.submit_review', movie_id=movie.id) }}" method="post">
+        <form action="{{ url_for('main.submit_review', media_title=movie.title, media_id=movie.id, media_type='movie') }}" method="post">
             <div class="stars">
                 {% for i in range(1, 6) %}
                     <input type="radio" id="star{{ i }}" name="rating" value="{{ i / 2 }}" />
@@ -49,7 +49,7 @@
     <div class="comments mt-4">
         <h3>Comments:</h3>
         <ul id="comments-list"></ul>
-        <form id="comment-form" action="{{ url_for('main.submit_comment') }}" method="post">
+        <form id="comment-form" action="{{ url_for('main.submit_comment', media_title=movie.title, media_id=movie.id, media_type='movie') }}" method="post">
             <input type="hidden" name="media_id" value="{{ movie.id }}">
             <input type="hidden" id="comment-timestamp" name="timestamp" value="0">
             <div class="form-group">
@@ -62,5 +62,8 @@
 </div>
 {% endblock %}
 {% block scripts %}
+<script>
+    var id = {{ movie.id }}
+</script>
 <script src="{{ url_for('static', filename='js/movie.js') }}" defer></script>
 {% endblock %}

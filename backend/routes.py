@@ -8,6 +8,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import User, Comment, Rating, Media
 from backend.tv_show_api import search_tv_shows
 
+import json
+
 
 main = Blueprint('main', __name__)
 
@@ -39,12 +41,47 @@ def movie(movie_id):
     
     return render_template('movie.html', movie=movie)
 
-@main.route('/submit_review/<int:movie_id>', methods=['POST'])
-def submit_review(movie_id):
-    rating = request.form.get('rating')
+@main.route('/submit_review', methods=['POST'])
+def submit_review():    
+
+    # define variables from url params
+    media_title  = request.args.get('media_title', None)
+    media_id = request.args.get('media_id', None)
+    media_type  = request.args.get('media_type', None)
+
+     # check if user is signed in
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+
+    # obtain neccesary vars from session and form 
+    user_id = session['user_id']
+    rating_given = request.form.get('rating')
+
+    # define user and media var (note, if media is not found, it will default to NONE)
+    user = db.session.query(User).filter(User.id == user_id).first()
+    media = db.session.query(Media).filter(Media.id == media_id).first()
+    rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.media_id == media_id).first()
+
+
+    # create a media object if none is found
+    if not media:
+        media = Media(id=media_id, title=media_title, media_type=media_type)
+
+    # add comment, and assign it a user
+    if user and media:
+        if not rating:
+            new_rating = Rating(user_id=user.id, media_id=media.id, rating=rating_given)
+            db.session.add(new_rating)
+            print("CREATED NEW RATING")
+        if rating:
+            rating.rating = rating_given
+            print("UPDATED RATING")
+        db.session.commit()
+
+    return redirect(url_for('main.movie', movie_id=media_id))
     # Process the rating (e.g., save it to the database)
-    flash('Thank you for your review!', 'success')
-    return redirect(url_for('main.movie', movie_id=movie_id))
+    #flash('Thank you for your review!', 'success')
+    #return redirect(url_for('main.movie', movie_id=movie_id))
 
 from flask import request, jsonify
 
@@ -169,7 +206,7 @@ def logout():
 @main.route('/comments', methods=['GET'])
 def get_comments():
     media_id = request.args.get('media_id')
-    timestamp = request.args.get('timestamp')
+    timestamp = int(request.args.get('timestamp'))
     media_type = request.args.get('media_type')
 
     comments = db.session.query(Comment).filter(Comment.media_id == media_id, Comment.timestamp == timestamp).all()
@@ -179,17 +216,30 @@ def get_comments():
 
 @main.route('/submit_comment', methods=['POST'])
 def submit_comment():
+    # define neccesary vars from url params
+    media_title  = request.args.get('media_title', None)
+    media_id = request.args.get('media_id', None)
+    media_type  = request.args.get('media_type', None)
+
+    # check if user is signed in
     if 'user_id' not in session:
         return redirect(url_for('main.login'))
 
+    # obtain neccesary vars from session and form 
     user_id = session['user_id']
-    media_id = request.form.get('media_id')
+    #media_id = request.form.get('media_id')
     timestamp = request.form.get('timestamp')
     text = request.form.get('text')
 
+    # define user and media var (note, if media is not found, it will default to NONE)
     user = db.session.query(User).filter(User.id == user_id).first()
     media = db.session.query(Media).filter(Media.id == media_id).first()
 
+    # create a media object if none is found
+    if not media:
+        media = Media(id=media_id, title=media_title, media_type=media_type)
+
+    # add comment, and assign it a user
     if user and media:
         new_comment = Comment(user_id=user.id, media_id=media.id, timestamp=int(timestamp), text=text)
         db.session.add(new_comment)
