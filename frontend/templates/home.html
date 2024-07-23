@@ -74,8 +74,8 @@
                     <div class="row">
                         {% for j in range(6) %}
                         <div class="col-md-2">
-                            <img src="https://via.placeholder.com/300x200?text=Show+{{ i*6 + j + 1 }}" class="d-block w-100" alt="Show Image">
-                            <p class="carousel-caption-below">Subtitle {{ i*6 + j + 1 }}</p>
+                            <img src="{{ shows[i*6 + j]['image'] }}" class="d-block w-100" alt="Show Image">
+                            <p class="carousel-caption-below">{{ shows[i*6 + j]['name'] }}</p>
                         </div>
                         {% endfor %}
                     </div>
