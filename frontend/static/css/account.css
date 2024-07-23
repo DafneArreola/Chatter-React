@@ -1,0 +1,15 @@
+/* frontend/static/css/account.css */
+
+h1, h2 {
+    font-family: Arial, sans-serif;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}

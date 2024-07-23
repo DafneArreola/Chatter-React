@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Account
+<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>My Account</h1>
+
+<h2>Profile Information</h2>
+<p><strong>Username:</strong> {{ user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+
+<h2>My Comments</h2>
+{% if comments %}
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <strong>{{ comment.media.title }}</strong> - {{ comment.text }} (Timestamp: {{ comment.timestamp }})
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No comments yet.</p>
+{% endif %}
+
+<h2>My Ratings</h2>
+{% if ratings %}
+    <ul>
+        {% for rating in ratings %}
+            <li>
+                <strong>{{ rating.media.title }}</strong> - Rating: {{ rating.rating }}/5
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No ratings yet.</p>
+{% endif %}
+
+{% endblock %}

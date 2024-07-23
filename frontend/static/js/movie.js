@@ -1,7 +1,11 @@
+// frontend/static/js/movie.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const playbackBar = document.querySelector('.playback-bar input[type="range"]');
     const currentTimeDisplay = document.getElementById('current-time');
     const totalTimeDisplay = document.getElementById('total-time');
+    const commentForm = document.getElementById('comment-form');
+    const commentsList = document.getElementById('comments-list');
 
     playbackBar.addEventListener('input', () => {
         const totalSeconds = parseInt(playbackBar.value, 10);
@@ -10,39 +14,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const seconds = totalSeconds % 60;
 
         currentTimeDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById('comment-timestamp').value = playbackBar.value;
+
+        fetch(`/comments?media_id={{ movie.id }}&timestamp=${playbackBar.value}&media_type=movie`)
+            .then(response => response.json())
+            .then(data => {
+                commentsList.innerHTML = '';
+                data.forEach(comment => {
+                    const commentElement = document.createElement('div');
+                    commentElement.textContent = `${comment.username}: ${comment.text}`;
+                    commentsList.appendChild(commentElement);
+                });
+            });
     });
 
-    // Initialize total time
-    const totalRuntimeSeconds = parseInt(playbackBar.max, 10);
-    const totalHours = Math.floor(totalRuntimeSeconds / 3600);
-    const totalMinutes = Math.floor((totalRuntimeSeconds % 3600) / 60);
-    const totalSeconds = totalRuntimeSeconds % 60;
+    commentForm.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-    totalTimeDisplay.textContent = `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+        const formData = new FormData(commentForm);
 
-    const stars = document.querySelectorAll('.stars label');
-    let currentRating = 0;
-
-    stars.forEach((star, index) => {
-        star.addEventListener('mouseover', () => {
-            stars.forEach((s, i) => {
-                s.style.color = i <= index ? 'gold' : '#ccc';
-            });
-        });
-
-        star.addEventListener('mouseout', () => {
-            stars.forEach((s, i) => {
-                s.style.color = i < currentRating ? 'gold' : '#ccc';
-            });
-        });
-
-        star.addEventListener('click', () => {
-            currentRating = index + 1;
-            document.querySelector(`input[name="rating"][value="${currentRating}"]`).checked = true;
-            stars.forEach((s, i) => {
-                s.style.color = i < currentRating ? 'gold' : '#ccc';
-            });
+        fetch(commentForm.action, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
         });
     });
-
 });

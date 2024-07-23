@@ -10,16 +10,12 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
+    from backend.routes import main
+    app.register_blueprint(main)
+
     with app.app_context():
-        from backend.routes import main
-        app.register_blueprint(main)
         db.create_all()
-
-    # Register the custom Jinja2 filter
-    @app.template_filter('string_padding')
-    def string_padding(value, length, char='0'):
-        return str(value).zfill(length)
-
+    
 
     return app
 
