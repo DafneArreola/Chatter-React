@@ -47,7 +47,7 @@ def get_popular_tv_shows_for_carousel():
             'image': show['poster_path'] and f"https://image.tmdb.org/t/p/w500{show['poster_path']}"
         }
         filtered_shows.append(new_entry)
-
+    # print("Filtered Shows: ", filtered_shows)  # Debugging
     return filtered_shows
 
 
