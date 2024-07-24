@@ -6,47 +6,71 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Search Header -->
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Rate Your Favorite Music</h1>
-        {% if search_query %}
-        <h2 class="text-center mb-4">Here are the search results for "{{ search_query }}"</h2>
-        {% endif %}
-        <!-- Search Form -->
-        <form action="{{ url_for('main.music_search') }}" method="POST">
-            {{ form.hidden_tag() }}
-            <div class="input-group mb-4">
-                {{ form.name_search(class="form-control form-control-lg", placeholder="Search for Music...") }}
-                <div class="input-group-append">
-                    <button class="btn btn-primary btn-lg" type="submit">Search</button>
+    <main>
+        <!-- Hero Section with Blob -->
+        <div class="hero">
+            <div class="blob">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="gradient-svg">
+                    <defs>
+                        <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f9c6c9" />
+                            <stop offset="25%" stop-color="#f9a6c0" />
+                            <stop offset="50%" stop-color="#a2d9ff" />
+                            <stop offset="75%" stop-color="#9575cd" />
+                            <stop offset="100%" stop-color="#b39ddb" />
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#blobGradient)" d="M38.8,-74C46.5,-62.7,46.5,-44.8,50.4,-31.3C54.4,-17.9,62.2,-9,61.7,-0.3C61.2,8.3,52.2,16.7,45.5,25.3C38.8,33.9,34.3,42.7,27.1,43.8C19.8,45,9.9,38.4,2.3,34.5C-5.4,30.6,-10.8,29.3,-23.6,31.4C-36.5,33.5,-56.8,39,-69.8,34.3C-82.8,29.7,-88.5,14.8,-85.4,1.8C-82.2,-11.2,-70.2,-22.4,-59.1,-30.3C-47.9,-38.1,-37.6,-42.6,-27.9,-52.8C-18.1,-63.1,-9.1,-79,3.2,-84.5C15.5,-90.1,31,-85.4,38.8,-74Z" transform="translate(100 100)" />
+                </svg>
+            </div>
+            <div class="content">
+                <div class="text-container">
+                    <h1>Rate Your Favorite Music</h1>
                 </div>
             </div>
-        </form>
-    </div>
-
-    <!-- Message if no tracks found -->
-    {% if results == 'Result Not Found' %}
-        <h3 class="no-results-found">No Results Found</h3>
-    {% else %}
-    <!-- Display Song Covers -->
-    <div class="container">
-        <div class="row">
-            {% for song in results %}
-            <div class="col-md-3 mb-4">
-                <a href="{{ url_for('main.song_detail', song_id=song['id']) }}" class="card-link">
-                    <div class="card">
-                        <img src="{{ song['image'] }}" class="card-img-top" alt="{{ song['name'] }}">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">{{ song['name'] }}</h5>
-                            <p class="card-text">{{ song['artists'] }}</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {% endfor %}
         </div>
-    </div>
-    {% endif %}
+
+        <!-- Search Section -->
+        <div class="container mt-5">
+            {% if search_query %}
+            <h2 class="text-center mb-4">Here are the search results for "{{ search_query }}"</h2>
+            {% endif %}
+            <!-- Search Form -->
+            <form action="{{ url_for('main.music_search') }}" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="input-group mb-4">
+                    {{ form.name_search(class="form-control form-control-lg", placeholder="Search for Music...") }}
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-lg" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Message if no tracks found -->
+        {% if results == 'Result Not Found' %}
+            <h3 class="no-results-found">No Results Found</h3>
+        {% else %}
+        <!-- Display Song Covers -->
+        <div class="container">
+            <div class="row">
+                {% for song in results %}
+                <div class="col-md-3 mb-4">
+                    <a href="{{ url_for('main.song_detail', song_id=song['id']) }}" class="card-link">
+                        <div class="card">
+                            <img src="{{ song['image'] }}" class="card-img-top" alt="{{ song['name'] }}">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ song['name'] }}</h5>
+                                <p class="card-text">{{ song['artists'] }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </main>
 {% endblock %}
 
 {% block scripts %}

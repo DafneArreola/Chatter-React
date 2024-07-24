@@ -10,27 +10,32 @@ class User(db.Model):
     ratings = db.relationship('Rating', backref='user', lazy=True)
 
 class Media(db.Model):
-    id = db.Column(db.String(50), primary_key=True)
+    unique_id = db.Column(db.Integer, primary_key=True) # this is the unique key for each row
+    id = db.Column(db.String(50)) # this is the MEDIA_ID (it is possible that many show episodes have same "id")
     title = db.Column(db.String(255), nullable=False)
     media_type = db.Column(db.String(50), nullable=False)  # 'movie', 'show', 'track', etc.
     comments = db.relationship('Comment', backref='media', lazy=True)
     ratings = db.relationship('Rating', backref='media', lazy=True)
 
+    episode_title = db.Column(db.String(255), nullable=False)
+    season_number = db.Column(db.Integer, nullable=True)
+    episode_number = db.Column(db.Integer, nullable=True)
+
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    media_id = db.Column(db.Integer, db.ForeignKey('media.id'), nullable=False)  # Added ForeignKey
+    media_id = db.Column(db.Integer, db.ForeignKey('media.unique_id'), nullable=False)  # Added ForeignKey
     timestamp = db.Column(db.Integer, nullable=False) # I think were storing seconds?
     text = db.Column(db.String(500), nullable=False)
+
     season_number = db.Column(db.Integer, nullable=True)
     episode_number = db.Column(db.Integer, nullable=True)
-    media_type = db.Column(db.String(50), nullable=True)
     
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    media_id = db.Column(db.Integer, db.ForeignKey('media.id'), nullable=False)  # Added ForeignKey
+    media_id = db.Column(db.Integer, db.ForeignKey('media.unique_id'), nullable=False)  # Added ForeignKey
     rating = db.Column(db.Float, nullable=False)
+
     season_number = db.Column(db.Integer, nullable=True)
     episode_number = db.Column(db.Integer, nullable=True)
-    media_type = db.Column(db.String(50), nullable=True)
