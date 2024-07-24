@@ -96,13 +96,15 @@ def submit_review_show():
     media_title  = request.args.get('media_title', None)
     media_id = request.args.get('media_id', None)
     media_type  = request.args.get('media_type', None)
-    episode_name = request.args.get('episode_name', None)
+    episode_title = request.args.get('episode_title', None)
     season_number=request.args.get('season_number', None) 
     episode_number=request.args.get('episode_number', None)
 
     # obtain neccesary vars from session and form 
     user_id = session['user_id']
     rating_given = request.form.get('rating')
+
+    print(f'userid = {user_id}')
 
     # check if user is signed in
     if 'user_id' not in session:
@@ -123,11 +125,11 @@ def submit_review_show():
  
     # if current episode doesnt exist, add it to 
     if not episode:
-        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_name=episode_name)
+        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_title=episode_title)
     
     # add rating if not present, and update if alr presnet
     if not rating:
-        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, episode_number=episode_number )
+        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, season_number=season_number, episode_number=episode_number )
         db.session.add(new_rating)
         print("CREATED NEW RATING")
     if rating:
@@ -145,7 +147,7 @@ def submit_comment_show():
     media_title  = request.args.get('media_title', None)
     media_id = request.args.get('media_id', None)
     media_type  = request.args.get('media_type', None)
-    episode_name = request.args.get('episode_name', None)
+    episode_title = request.args.get('episode_title', None)
     season_number=request.args.get('season_number', None) 
     episode_number=request.args.get('episode_number', None)
 
@@ -167,7 +169,7 @@ def submit_comment_show():
  
     # if current episode doesnt exist, add it to 
     if not episode:
-        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_name=episode_name)
+        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_title=episode_title)
     
     # add rating if not present, and update if alr presnet
     if not rating:
