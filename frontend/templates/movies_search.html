@@ -6,45 +6,68 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Search Header -->
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Rate Your Favorite Movie</h1>
-        {% if search_query %}
-        <h2 class="text-center mb-4">Here are the search results for "{{ search_query }}"</h2>
-        {% endif %}
-        <!-- Search Form -->
-        <form action="{{ url_for('main.movies_search') }}" method="get">
-            <div class="input-group mb-4">
-                <input type="text" class="form-control form-control-lg" name="q" placeholder="Search for Movies..." aria-label="Search for movies">
-                <div class="input-group-append">
-                    <button class="btn btn-primary btn-lg" type="submit">Search</button>
+    <main>
+        <div class="hero">
+            <div class="blob">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="gradient-svg">
+                    <defs>
+                        <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f9c6c9" />
+                            <stop offset="25%" stop-color="#f9a6c0" />
+                            <stop offset="50%" stop-color="#a2d9ff" />
+                            <stop offset="75%" stop-color="#9575cd" />
+                            <stop offset="100%" stop-color="#b39ddb" />
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#blobGradient)" d="M38.8,-74C46.5,-62.7,46.5,-44.8,50.4,-31.3C54.4,-17.9,62.2,-9,61.7,-0.3C61.2,8.3,52.2,16.7,45.5,25.3C38.8,33.9,34.3,42.7,27.1,43.8C19.8,45,9.9,38.4,2.3,34.5C-5.4,30.6,-10.8,29.3,-23.6,31.4C-36.5,33.5,-56.8,39,-69.8,34.3C-82.8,29.7,-88.5,14.8,-85.4,1.8C-82.2,-11.2,-70.2,-22.4,-59.1,-30.3C-47.9,-38.1,-37.6,-42.6,-27.9,-52.8C-18.1,-63.1,-9.1,-79,3.2,-84.5C15.5,-90.1,31,-85.4,38.8,-74Z" transform="translate(100 100)" />
+                </svg>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="text-container">
+                    <h1>Rate Your Favorite Movies</h1>
                 </div>
             </div>
-        </form>
-    </div>
-
-    <!-- Display Movie Covers -->
-    <div class="container">
-        <div class="row">
-            {% for movie in movies %}
-            <div class="col-md-3 mb-4">
-                <a href="{{ url_for('main.movie', movie_id=movie.id) }}" class="card-link">
-                    <div class="card">
-                        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">{{ movie.title }}</h5>
-                            <p class="card-text">{{ movie.release_date }}</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {% else %}
-            <p>No movies found.</p>
-            {% endfor %}
         </div>
-    </div>
+
+        <!-- Search Section -->
+        <div class="container mt-5">
+            {% if search_query %}
+            <h2 class="text-center mb-4">Here are the search results for "{{ search_query }}"</h2>
+            {% endif %}
+            <form action="{{ url_for('main.movies_search') }}" method="get">
+                <div class="input-group mb-4">
+                    <input type="text" class="form-control form-control-lg" name="q" placeholder="Search for Movies..." aria-label="Search for movies">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-lg" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Display Movie Covers -->
+        <div class="container">
+            <div class="row">
+                {% for movie in movies %}
+                <div class="col-md-3 mb-4">
+                    <a href="{{ url_for('main.movie', movie_id=movie.id) }}" class="card-link">
+                        <div class="card">
+                            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ movie.title }}</h5>
+                                <p class="card-text">{{ movie.release_date }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% else %}
+                <p>No movies found.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
 {% endblock %}
 
 {% block scripts %}
-    <!-- <script src="{{ url_for('static', filename='js/movie_search.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/movie_search.js') }}"></script>
 {% endblock %}

@@ -1,6 +1,88 @@
 * {
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
+}
+
+/* Style for the hero section */
+.hero {
+    position: relative;
+    height: 350px; /* Adjust height as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #0e0b16;
+    color: white;
+}
+
+.hero .content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 50%;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3vw;
+    font-weight: bolder;
+    margin: 0;
+    text-shadow: 1px 1px 2px black;
+}
+
+.blob {
+    position: absolute;
+    width: 80vw; /* Full width of the viewport */
+    height: auto;
+    top: -155%; /* Adjust this to position the blob correctly */
+    left: 15%; /* Adjust this to center the blob */
+    transform: translateY(-20%);
+    z-index: 0;
+    animation: pulsate 5s infinite;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+} 
+
+.blob svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+@keyframes pulsate {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.gradient-svg {
+    width: 100%;
+    height: auto;
+}
+
+.gradient-svg path {
+    fill: url(#blobGradient);
+    animation: gradient-animation 10s ease infinite;
+}
+
+@keyframes gradient-animation {
+    0% {
+        fill: linear-gradient(115deg, #f9c6c9 0%, #f9a6c0 25%, #a2d9ff 50%, #9575cd 75%, #b39ddb 100%);
+    }
+    50% {
+        fill: linear-gradient(115deg, #b39ddb 0%, #9575cd 25%, #a2d9ff 50%, #f9a6c0 75%, #f9c6c9 100%);
+    }
+    100% {
+        fill: linear-gradient(115deg, #f9c6c9 0%, #f9a6c0 25%, #a2d9ff 50%, #9575cd 75%, #b39ddb 100%);
+    }
 }
 
 /* Style for the search form */
@@ -49,10 +131,11 @@
 }
 
 .container {
-    padding: 20px;
+    margin-top: 20px;
 }
 
 .no-results-found {
     text-align: center;
     color: #fff;
+    margin-top: 20px;
 }
