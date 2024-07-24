@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     playbackBar.addEventListener('mouseup', () =>{
-        fetch(`/comments?media_id=${id}&timestamp=${playbackBar.value}&media_type=episode`)
+        fetch(`/comments_show?media_id=${id}&timestamp=${playbackBar.value}&media_type=show&episode_number=${episode_number}&season_number=${season_number}`)
+        
         .then(response => response.json())
         .then(data => {
             commentsList.innerHTML = '';

@@ -62,6 +62,8 @@ def submit_review():
     # create a media object if none is found
     if not media:
         media = Media(id=media_id, title=media_title, media_type=media_type)
+        db.session.add(media)
+        db.session.commit()
 
     # add rating if not present, and update if alr presnet
     if user and media:
@@ -109,14 +111,8 @@ def submit_review_show():
     if 'user_id' not in session:
         return redirect(url_for('main.login'))
     
-    # make variable to check if media, episode, and rating already exist
-    #media = db.session.query(Media).filter(Media.id == media_id).first()
-    #episode = db.session.query(Media).filter(Media.id == media_id, Media.season_number == season_number, Media.episode_number == episode_number).first()
     episode = db.session.query(Media).filter(Media.id == media_id).first()
-    print(db.session.query(Media).all())
-    print(episode)
     rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.media_id == media_id, Rating.season_number == season_number, Rating.episode_number == episode_number).first()
-    print(rating)
 
     #  # create a media object if none is found
     # if not media:
@@ -125,6 +121,9 @@ def submit_review_show():
     # if current episode doesnt exist, add it to 
     if not episode:
         episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_title=episode_title)
+        db.session.add(episode)
+        db.session.commit()
+    
     
     # add rating if not present, and update if alr presnet
     if not rating:
@@ -144,7 +143,7 @@ def submit_comment_show():
 
     # define variables from url params
     media_title  = request.args.get('media_title', None)
-    media_id = request.args.get('media_id', None)
+    media_id = request.args.get('media_id', None) # id of the show
     media_type  = request.args.get('media_type', None)
     episode_title = request.args.get('episode_title', None)
     season_number=request.args.get('season_number', None) 
@@ -159,9 +158,9 @@ def submit_comment_show():
     if 'user_id' not in session:
         return redirect(url_for('main.login'))
     
-    episode = db.session.query(Media).filter(Media.id == media_id).first()
-    comment = db.session.query(Comment).filter(Comment.user_id == user_id, Rating.media_id == media_id, Rating.season_number == season_number, Rating.episode_number == episode_number).first()
-
+    episode = db.session.query(Media).filter(Comment.user_id == user_id, Media.id == media_id, Media.episode_number == int(episode_number), Media.season_number == int(season_number)).first()
+    print(episode)
+    #comment = db.session.query(Comment).filter(Comment.user_id == user_id, Rating.media_id == media_id, Rating.season_number == season_number, Rating.episode_number == episode_number).first()
 
     #  # create a media object if none is found
     # if not media:
@@ -169,10 +168,22 @@ def submit_comment_show():
  
     # if current episode doesnt exist, add it to 
     if not episode:
-        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_title=episode_title)
-    
+        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=int(season_number), episode_number=int(episode_number), episode_title=episode_title)
+        db.session.add(episode)
+        db.session.commit()
+
+    print("faoejfoajeofjaefjaeof")
+    print(timestamp)
+    #print(episode.unique_id)
+    #print(episode.title)
+    print(episode.id)
+    #print(episode.media_type)
+    print(episode.season_number)
+    print(episode.episode_number)
+    #print(episode.episode_title)
+
     # add rating if not present, and update if alr presnet
-    new_comment = Comment(user_id=user_id, media_id=media_id, timestamp=int(timestamp), text=text, season_number=season_number, episode_number=episode_number )
+    new_comment = Comment(user_id=user_id, media_id=episode.unique_id, timestamp=int(timestamp), text=text, season_number=season_number, episode_number=episode_number )
     db.session.add(new_comment)
     db.session.commit()
 
@@ -321,17 +332,43 @@ def get_comments():
     timestamp = int(request.args.get('timestamp'))
     media_type = request.args.get('media_type')
 
-    comments = db.session.query(Comment).filter(Comment.media_id == media_id, Comment.timestamp == timestamp).all()
-
+    comments = db.session.query(Comment).join(Media).filter(Media.id == media_id, Comment.timestamp == int(timestamp)).all()
     comment_data = [{'username': comment.user.username, 'text': comment.text} for comment in comments]
-    #print(comment_data)
+
+    return jsonify(comment_data)
+
+@main.route('/comments_show', methods=['GET'])
+def get_comments_show():
+    media_id = request.args.get('media_id')
+    timestamp = int(request.args.get('timestamp'))
+    #media_type = request.args.get('media_type')
+    season_number = request.args.get('season_number')
+    episode_number = request.args.get('episode_number')
+
+    print("#2")
+    print(timestamp)
+    #print(unique_id)
+    #print(media_title)
+    print(media_id)
+    #print(media_type)
+    print(season_number)
+    print(episode_number)
+    #print(episode_title)
+    
+
+    
+
+    comments = db.session.query(Comment).join(Media).filter(Media.id == media_id, Comment.season_number == int(season_number), Comment.episode_number == int(episode_number), Comment.timestamp == timestamp).all()
+    print(comments)
+    comment_data = [{'username': comment.user.username, 'text': comment.text} for comment in comments]
+
     return jsonify(comment_data)
 
 @main.route('/submit_comment', methods=['POST'])
 def submit_comment():
     # Retrieve necessary variables from form or URL parameters
     media_title = request.args.get('media_title', None)
-    media_id = request.args.get('media_id', None)
+    media_id = request.args.get('media_id', None) # this goes in Media.id variable
     media_type = request.args.get('media_type', None)
 
     # Check if user is signed in (session check)
@@ -346,14 +383,18 @@ def submit_comment():
     # Find the user and media objects (create media if not found)
     user = db.session.query(User).filter(User.id == user_id).first()
     media = db.session.query(Media).filter(Media.id == media_id).first()
+    print(media)
 
     if not media:
         # Create a new media object if not found
+        print('media created')
         media = Media(id=media_id, title=media_title, media_type=media_type)
+        db.session.add(media)
+        db.session.commit()
 
     # Create a new comment object and associate it with the user and media
     if user and media:
-        new_comment = Comment(user_id=user.id, media_id=media.id, timestamp=int(timestamp), text=text)
+        new_comment = Comment(user_id=user.id, media_id=media.unique_id, timestamp=int(timestamp), text=text)
         db.session.add(new_comment)
         db.session.commit()
 
