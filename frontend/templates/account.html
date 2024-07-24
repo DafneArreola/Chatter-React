@@ -1,39 +1,92 @@
 {% extends "base.html" %}
-{% block title %}Account
-<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
+
+{% block title %}
+    <title>{{ user.username }} - Account Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 {% endblock %}
 
 {% block content %}
-<h1>My Account</h1>
+<div class="container mt-4">
+    <div class="row">
+        <!-- User Information -->
+        <div class="col-12">
+            <h1><strong>Account Details</strong></h1>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">User Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ratings Accordion -->
+        <div class="col-12 mt-4">
+            <div id="accordionRatings">
+                <div class="card">
+                    <div class="card-header" id="headingRatings">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseRatings" aria-expanded="true" aria-controls="collapseRatings">
+                                User Ratings
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseRatings" class="collapse show" aria-labelledby="headingRatings" data-parent="#accordionRatings">
+                        <div class="card-body">
+                            <ul>
+                                {% for rating in ratings %}
+                                    <li>
+                                        <strong>{{ rating.media.title }}</strong>
+                                        {% if rating.media.season_number %}
+                                            , Season: {{ rating.media.season_number }}
+                                        {% endif %}
+                                        {% if rating.media.episode_number %}
+                                            , Episode {{ rating.media.episode_number }}: {{ rating.media.episode_title }}
+                                        {% endif %}
+                                        - Rating: {{ rating.rating }} / 5
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<h2>Profile Information</h2>
-<p><strong>Username:</strong> {{ user.username }}</p>
-<p><strong>Email:</strong> {{ user.email }}</p>
-
-<h2>My Comments</h2>
-{% if comments %}
-    <ul>
-        {% for comment in comments %}
-            <li>
-                <strong>{{ comment.media.title }}</strong> - {{ comment.text }} (Timestamp: {{ comment.timestamp }})
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No comments yet.</p>
-{% endif %}
-
-<h2>My Ratings</h2>
-{% if ratings %}
-    <ul>
-        {% for rating in ratings %}
-            <li>
-                <strong>{{ rating.media.title }}</strong> - Rating: {{ rating.rating }}/5
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No ratings yet.</p>
-{% endif %}
-
+        <!-- Comments Accordion -->
+        <div class="col-12 mt-4">
+            <div id="accordionComments">
+                <div class="card">
+                    <div class="card-header" id="headingComments">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseComments" aria-expanded="true" aria-controls="collapseComments">
+                                User Comments
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseComments" class="collapse" aria-labelledby="headingComments" data-parent="#accordionComments">
+                        <div class="card-body">
+                            <ul>
+                                {% for comment in comments %}
+                                    <li>
+                                        <strong>{{ comment.media.title }}</strong>
+                                        {% if comment.media.season_number %}
+                                            , Season: {{ comment.media.season_number }}
+                                        {% endif %}
+                                        {% if comment.media.episode_number %}
+                                            , Episode {{ comment.media.episode_number }}: {{ comment.media.episode_title }}
+                                        {% endif %}
+                                        - Comment: {{ comment.text }} ({{ comment.timestamp | timestamp_to_hms }})
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

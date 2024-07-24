@@ -7,10 +7,13 @@ from backend.search_form import SearchForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import User, Comment, Rating, Media
 from backend.tv_show_api import get_popular_tv_shows_for_carousel, get_tv_show_details, fetch_show_details, fetch_episode_details, search_tv_shows, get_popular_tv_shows, fetch_season_episodes, fetch_show_poster, fetch_shows
+from datetime import timedelta
 import json
 
 
 main = Blueprint('main', __name__)
+
+
 
 @main.route('/')
 def home():
@@ -366,14 +369,32 @@ def submit_comment():
 
 @main.route('/account')
 def account():
-    if 'user_id' not in session:
-        return redirect(url_for('main.login'))
+    user_id = session.get('user_id')  # Get the logged-in user's ID from the session
 
-    user_id = session['user_id']
-    user = db.session.query(User).filter(User.id == user_id).first()
-    comments = db.session.query(Comment).filter(Comment.user_id == user_id).all()
-    ratings = db.session.query(Rating).filter(Rating.user_id == user_id).all()
+    # Fetch user details
+    user = User.query.get(user_id)
+    # unique_id = '629DixmZGHc7ILtEntuiWE'
+    ratings = Rating.query.filter_by(user_id=user_id).all()
+    comments = Comment.query.filter_by(user_id=user_id).all()
+    # media = Media.query.filter_by(id=unique_id).all()
 
-    return render_template('account.html', user=user, comments=comments, ratings=ratings)
+    # print(ratings)
+    # print(comments)
+    # print(((ratings[8]).media_id))
+    # print(media)
+    # # Fetch media titles for ratings
+    # ratings_with_titles = [(rating, Media.query.get(rating.media_id).title) for rating in ratings]
+
+    # # Fetch media titles for comments
+    # comments_with_titles = [(comment, Media.query.get(comment.media_id).title) for comment in comments]
+    # print(ratings_with_titles)
+    # print(comments_with_titles)
+    return render_template('account.html', user=user, ratings=ratings, comments=comments)
 
 
+@main.record_once
+def register_template_filters(state):
+    app = state.app
+    @app.template_filter('timestamp_to_hms')
+    def timestamp_to_hms_filter(seconds):
+        return str(timedelta(seconds=seconds))

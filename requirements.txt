@@ -9,3 +9,4 @@ SearchForm
 flask_wtf
 flask 
 flask-socketio
+flask-login
