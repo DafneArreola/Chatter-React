@@ -89,6 +89,98 @@ def submit_review():
     #flash('Thank you for your review!', 'success')
     #return redirect(url_for('main.movie', movie_id=movie_id))
 
+@main.route('/submit_review_show', methods=['POST'])
+def submit_review_show():
+
+    # define variables from url params
+    media_title  = request.args.get('media_title', None)
+    media_id = request.args.get('media_id', None)
+    media_type  = request.args.get('media_type', None)
+    episode_name = request.args.get('episode_name', None)
+    season_number=request.args.get('season_number', None) 
+    episode_number=request.args.get('episode_number', None)
+
+    # obtain neccesary vars from session and form 
+    user_id = session['user_id']
+    rating_given = request.form.get('rating')
+
+    # check if user is signed in
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+    
+    # make variable to check if media, episode, and rating already exist
+    #media = db.session.query(Media).filter(Media.id == media_id).first()
+    #episode = db.session.query(Media).filter(Media.id == media_id, Media.season_number == season_number, Media.episode_number == episode_number).first()
+    episode = db.session.query(Media).filter(Media.id == media_id).first()
+    print(db.session.query(Media).all())
+    print(episode)
+    rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.media_id == media_id, Rating.season_number == season_number, Rating.episode_number == episode_number).first()
+    print(rating)
+
+    #  # create a media object if none is found
+    # if not media:
+    #     media = Media(id=media_id, title=media_title, media_type=media_type)
+ 
+    # if current episode doesnt exist, add it to 
+    if not episode:
+        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_name=episode_name)
+    
+    # add rating if not present, and update if alr presnet
+    if not rating:
+        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, episode_number=episode_number )
+        db.session.add(new_rating)
+        print("CREATED NEW RATING")
+    if rating:
+        rating.rating = rating_given
+        print("UPDATED RATING")
+    db.session.commit()
+
+    return redirect(url_for('main.episode_details', show_id=int(media_id), season_number=season_number, episode_number=episode_number))
+
+
+@main.route('/submit_comment_show', methods=['POST'])
+def submit_comment_show():
+
+    # define variables from url params
+    media_title  = request.args.get('media_title', None)
+    media_id = request.args.get('media_id', None)
+    media_type  = request.args.get('media_type', None)
+    episode_name = request.args.get('episode_name', None)
+    season_number=request.args.get('season_number', None) 
+    episode_number=request.args.get('episode_number', None)
+
+    # obtain neccesary vars from session and form 
+    user_id = session['user_id']
+    rating_given = request.form.get('rating')
+
+    # check if user is signed in
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+    
+    episode = db.session.query(Media).filter(Media.id == media_id).first()
+    comment = db.session.query(Comment).filter(Comment.user_id == user_id, Rating.media_id == media_id, Rating.season_number == season_number, Rating.episode_number == episode_number).first()
+
+
+    #  # create a media object if none is found
+    # if not media:
+    #     media = Media(id=media_id, title=media_title, media_type=media_type)
+ 
+    # if current episode doesnt exist, add it to 
+    if not episode:
+        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_name=episode_name)
+    
+    # add rating if not present, and update if alr presnet
+    if not rating:
+        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, episode_number=episode_number )
+        db.session.add(new_rating)
+        print("CREATED NEW RATING")
+    if rating:
+        rating.rating = rating_given
+        print("UPDATED RATING")
+    db.session.commit()
+
+    return redirect(url_for('main.episode_details', show_id=int(media_id), season_number=season_number, episode_number=episode_number))
+
 
 @main.route('/music', methods=['GET', 'POST'])
 def music_search():
@@ -178,7 +270,7 @@ def episode_details(show_id, season_number, episode_number):
         'id': show_data['id'],
         'title': show_data['name']
     }
-    return render_template('episode.html', episode=episode, show_id=show_id, season_number=season_number, poster_url=poster_url, show=show)
+    return render_template('episode.html', episode=episode, show_id=show_id, episode_number=episode_number, season_number=season_number, poster_url=poster_url, show=show)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():

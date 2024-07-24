@@ -36,7 +36,6 @@
     </div>
 
 
-
     <!-- Playback Bar -->
     <div class="playback-bar mt-4">
         <h3>Playback Bar:</h3>
@@ -51,7 +50,7 @@
     <div class="comments mt-4">
         <h3>Comments:</h3>
         <ul id="comments-list"></ul>
-        <form id="comment-form" action="{{ url_for('main.submit_comment', media_title=episode.title, media_id=episode.id, media_type='episode') }}" method="post">
+        <form action="{{ url_for('main.submit_comment_show', media_title=show.title, media_id=show.id, media_type='show', episode_name=episode.title, season_number=season_number, episode_number=episode_number ) }}" method="post">
             <input type="hidden" name="media_id" value="{{ episode.id }}">
             <input type="hidden" id="comment-timestamp" name="timestamp" value="0">
             <div class="form-group">
