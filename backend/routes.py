@@ -7,7 +7,6 @@ from backend.search_form import SearchForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import User, Comment, Rating, Media
 from backend.tv_show_api import get_popular_tv_shows_for_carousel, get_tv_show_details, fetch_show_details, fetch_episode_details, search_tv_shows, get_popular_tv_shows, fetch_season_episodes, fetch_show_poster, fetch_shows
-
 import json
 
 
@@ -96,13 +95,15 @@ def submit_review_show():
     media_title  = request.args.get('media_title', None)
     media_id = request.args.get('media_id', None)
     media_type  = request.args.get('media_type', None)
-    episode_name = request.args.get('episode_name', None)
+    episode_title = request.args.get('episode_title', None)
     season_number=request.args.get('season_number', None) 
     episode_number=request.args.get('episode_number', None)
 
     # obtain neccesary vars from session and form 
     user_id = session['user_id']
     rating_given = request.form.get('rating')
+
+    print(f'userid = {user_id}')
 
     # check if user is signed in
     if 'user_id' not in session:
@@ -123,11 +124,11 @@ def submit_review_show():
  
     # if current episode doesnt exist, add it to 
     if not episode:
-        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_name=episode_name)
+        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_title=episode_title)
     
     # add rating if not present, and update if alr presnet
     if not rating:
-        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, episode_number=episode_number )
+        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, season_number=season_number, episode_number=episode_number )
         db.session.add(new_rating)
         print("CREATED NEW RATING")
     if rating:
@@ -145,13 +146,14 @@ def submit_comment_show():
     media_title  = request.args.get('media_title', None)
     media_id = request.args.get('media_id', None)
     media_type  = request.args.get('media_type', None)
-    episode_name = request.args.get('episode_name', None)
+    episode_title = request.args.get('episode_title', None)
     season_number=request.args.get('season_number', None) 
     episode_number=request.args.get('episode_number', None)
 
     # obtain neccesary vars from session and form 
     user_id = session['user_id']
-    rating_given = request.form.get('rating')
+    timestamp = request.form.get('timestamp')
+    text = request.form.get('text')
 
     # check if user is signed in
     if 'user_id' not in session:
@@ -167,17 +169,13 @@ def submit_comment_show():
  
     # if current episode doesnt exist, add it to 
     if not episode:
-        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_name=episode_name)
+        episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_title=episode_title)
     
     # add rating if not present, and update if alr presnet
-    if not rating:
-        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, episode_number=episode_number )
-        db.session.add(new_rating)
-        print("CREATED NEW RATING")
-    if rating:
-        rating.rating = rating_given
-        print("UPDATED RATING")
+    new_comment = Comment(user_id=user_id, media_id=media_id, timestamp=int(timestamp), text=text, season_number=season_number, episode_number=episode_number )
+    db.session.add(new_comment)
     db.session.commit()
+
 
     return redirect(url_for('main.episode_details', show_id=int(media_id), season_number=season_number, episode_number=episode_number))
 
@@ -312,8 +310,10 @@ def register():
 @main.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('user_id', None)
+
     flash('You have been logged out', 'success')
-    return redirect(url_for('main.login'))
+    return redirect(url_for('main.home'))
 
 @main.route('/comments', methods=['GET'])
 def get_comments():
