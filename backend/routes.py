@@ -57,7 +57,7 @@ def submit_review():
     # define user and media var (note, if media is not found, it will default to NONE)
     user = db.session.query(User).filter(User.id == user_id).first()
     media = db.session.query(Media).filter(Media.id == media_id).first()
-    rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.media_id == media_id).first()
+    rating = db.session.query(Rating).join(Media).filter(Rating.user_id == user_id, Media.id == media_id).first()
 
     # create a media object if none is found
     if not media:
@@ -68,7 +68,7 @@ def submit_review():
     # add rating if not present, and update if alr presnet
     if user and media:
         if not rating:
-            new_rating = Rating(user_id=user.id, media_id=media.id, rating=rating_given)
+            new_rating = Rating(user_id=user.id, media_id=media.unique_id, rating=rating_given)
             db.session.add(new_rating)
             print("CREATED NEW RATING")
         if rating:
@@ -96,6 +96,7 @@ def submit_review_show():
     # define variables from url params
     media_title  = request.args.get('media_title', None)
     media_id = request.args.get('media_id', None)
+    print(media_id)
     media_type  = request.args.get('media_type', None)
     episode_title = request.args.get('episode_title', None)
     season_number=request.args.get('season_number', None) 
@@ -111,8 +112,10 @@ def submit_review_show():
     if 'user_id' not in session:
         return redirect(url_for('main.login'))
     
-    episode = db.session.query(Media).filter(Media.id == media_id).first()
-    rating = db.session.query(Rating).filter(Rating.user_id == user_id, Rating.media_id == media_id, Rating.season_number == season_number, Rating.episode_number == episode_number).first()
+    episode = db.session.query(Media).filter(Media.id == media_id, Media.season_number == season_number, Media.episode_number == episode_number).first()
+    print(episode)
+    rating = db.session.query(Rating).join(Media).filter(Rating.user_id == user_id, Media.id == media_id, Rating.season_number == season_number, Rating.episode_number == episode_number).first()
+    print(rating)
 
     #  # create a media object if none is found
     # if not media:
@@ -127,7 +130,7 @@ def submit_review_show():
     
     # add rating if not present, and update if alr presnet
     if not rating:
-        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, season_number=season_number, episode_number=episode_number )
+        new_rating = Rating(user_id=user_id, media_id=episode.unique_id, rating=rating_given, season_number=season_number, episode_number=episode_number )
         db.session.add(new_rating)
         print("CREATED NEW RATING")
     if rating:
