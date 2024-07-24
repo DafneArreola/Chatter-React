@@ -12,65 +12,31 @@ img {
     border-radius: 5px;
 }
 
-/* Star Rating System */
-.stars {
-    display: flex;
-    justify-content: flex-start;
-    margin-top: 10px;
-}
-
+/* Hide the radio buttons */
 .stars input {
-    display: none; /* Hide the radio buttons */
+    display: none;
 }
 
+/* Style the stars */
 .stars label {
-    position: relative;
-    width: 40px;
     font-size: 3rem;
     color: #ccc; /* Default gray color for stars */
     cursor: pointer;
     transition: color 0.2s;
 }
 
-/* Display star */
-.stars label::before {
-    content: "\2605"; /* Star character */
-    display: block;
-}
-
-/* Star highlighting logic */
-.stars input:checked ~ .stars label {
-    color: #FFD700; /* Gold color for all stars to the right */
-}
-
-/* Highlight stars to the left of the checked star */
-.stars input:checked ~ input:checked ~ .stars label {
-    color: #FFD700; /* Gold color for all stars to the left */
-}
-
-.stars input:checked + label {
-    color: #FFD700; /* Gold color for the clicked star */
-}
-
-/* Hover Effect */
+/* Gold color for selected stars */
+.stars input:checked ~ label,
 .stars label:hover,
 .stars label:hover ~ label {
-    color: #FFD700; /* Gold color on hover for the current and previous stars */
+    color: #FFD700; /* Gold color */
 }
 
-.stars input:not(:checked) ~ label:hover {
-    color: #FFD700; /* Gold color for stars being hovered over */
-}
-
-/* Prevent stars after hovered star from turning gold */
+/* Gray color for unselected stars */
 .stars input:not(:checked) ~ label {
-    color: #ccc; /* Gray color for stars not being hovered over */
+    color: #ccc; /* Default gray color for stars */
 }
 
-/* Ensure all previously hovered stars are gold */
-.stars input:not(:checked) ~ input:checked ~ label {
-    color: #FFD700;
-}
 
 .btn {
     background: linear-gradient(to right, #6a11cb, #2575fc);

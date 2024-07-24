@@ -26,7 +26,7 @@
                     <div class="stars">
                         {% for i in range(1, 6) %}
                             <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" />
-                            <label for="star{{ i }}" title="{{ i }} stars"></label>
+                            <label for="star{{ i }}" title="{{ i }} stars">&#9733;</label>
                         {% endfor %}
                     </div>
                     <button type="submit" class="btn btn-primary mt-2">Submit Review</button>

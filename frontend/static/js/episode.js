@@ -7,6 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const commentForm = document.getElementById('comment-form');
     const commentsList = document.getElementById('comments-list');
 
+    const stars = document.querySelectorAll('.stars label');
+    stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            // Clear all stars
+            stars.forEach(s => s.style.color = '#ccc');
+            // Highlight selected star and all previous stars
+            for (let i = 0; i <= index; i++) {
+                stars[i].style.color = '#FFD700';
+            }
+        });
+    });
+    
     playbackBar.addEventListener('input', () => {
         const totalSeconds = parseInt(playbackBar.value, 10);
         const hours = Math.floor(totalSeconds / 3600);
