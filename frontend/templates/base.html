@@ -37,9 +37,15 @@
                 <li class="nav-item">
                     <a class="nav-link account-text" href="{{ url_for('main.account') }}">Account</a>
                 </li>
-                <li class="nav-item">
-                    <a class="login-button" href="{{ url_for('main.login') }}">Login</a>
-                </li>
+                {% if 'user_id' in session %}
+                    <li class="nav-item">
+                        <a class="login-button" href="{{ url_for('main.logout') }}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="login-button" href="{{ url_for('main.login') }}">Login</a>
+                    </li>
+                {% endif %}
             </ul>
         </nav>
     
@@ -56,7 +62,11 @@
                 <a href="{{ url_for('main.shows_search') }}">TV Shows</a> |
                 <a href="{{ url_for('main.music_search') }}">Music</a> |
                 <a href="{{ url_for('main.account') }}">Account</a> |
-                <a href="{{ url_for('main.login') }}">Login</a>
+                {% if 'user_id' in session %}
+                    <a href="{{ url_for('main.logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('main.login') }}">Login</a>
+                {% endif %}
             </div>
         </footer>
     </div>

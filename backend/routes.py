@@ -7,7 +7,6 @@ from backend.search_form import SearchForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import User, Comment, Rating, Media
 from backend.tv_show_api import get_popular_tv_shows_for_carousel, get_tv_show_details, fetch_show_details, fetch_episode_details, search_tv_shows, get_popular_tv_shows, fetch_season_episodes, fetch_show_poster, fetch_shows
-
 import json
 
 
@@ -314,8 +313,10 @@ def register():
 @main.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('user_id', None)
+
     flash('You have been logged out', 'success')
-    return redirect(url_for('main.login'))
+    return redirect(url_for('main.home'))
 
 @main.route('/comments', methods=['GET'])
 def get_comments():
