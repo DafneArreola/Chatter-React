@@ -152,7 +152,8 @@ def submit_comment_show():
 
     # obtain neccesary vars from session and form 
     user_id = session['user_id']
-    rating_given = request.form.get('rating')
+    timestamp = request.form.get('timestamp')
+    text = request.form.get('text')
 
     # check if user is signed in
     if 'user_id' not in session:
@@ -171,14 +172,10 @@ def submit_comment_show():
         episode = Media(id=media_id, title=media_title, media_type=media_type, season_number=season_number, episode_number=episode_number, episode_title=episode_title)
     
     # add rating if not present, and update if alr presnet
-    if not rating:
-        new_rating = Rating(user_id=user_id, media_id=episode.id, rating=rating_given, episode_number=episode_number )
-        db.session.add(new_rating)
-        print("CREATED NEW RATING")
-    if rating:
-        rating.rating = rating_given
-        print("UPDATED RATING")
+    new_comment = Comment(user_id=user_id, media_id=media_id, timestamp=int(timestamp), text=text, season_number=season_number, episode_number=episode_number )
+    db.session.add(new_comment)
     db.session.commit()
+
 
     return redirect(url_for('main.episode_details', show_id=int(media_id), season_number=season_number, episode_number=episode_number))
 
