@@ -9,14 +9,16 @@
     <!-- Search Header -->
     <div class="container mt-5">
         <h1 class="text-center mb-4">Rate Your Favorite Music</h1>
-        
+        {% if search_query %}
+        <h2 class="text-center mb-4">Here are the search results for "{{ search_query }}"</h2>
+        {% endif %}
         <!-- Search Form -->
-        <form action="" method="POST">
+        <form action="{{ url_for('main.music_search') }}" method="POST">
             {{ form.hidden_tag() }}
             <div class="input-group mb-4">
-                {{ form.name_search(class="form-control form-control-lg") }}
+                {{ form.name_search(class="form-control form-control-lg", placeholder="Search for Music...") }}
                 <div class="input-group-append">
-                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                    <button class="btn btn-primary btn-lg" type="submit">Search</button>
                 </div>
             </div>
         </form>
@@ -25,23 +27,21 @@
     <!-- Message if no tracks found -->
     {% if results == 'Result Not Found' %}
         <h3 class="no-results-found">No Results Found</h3>
-    
-    {% endif %}
-
-    {% if not results == 'Result Not Found' %}
-    <!-- Display Song Covers (Placeholder) -->
+    {% else %}
+    <!-- Display Song Covers -->
     <div class="container">
         <div class="row">
             {% for song in results %}
             <div class="col-md-3 mb-4">
-                <div class="card">
-                    <a href="{{ url_for('main.song_detail', song_id=song['id']) }}"><span></span></a>
-                    <img src="{{ song['image'] }}" class="card-img-top" alt="{{ song['name'] }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ song['name'] }}</h5>
-                        <p class="card-text">{{ song['artists'] }}</p>
+                <a href="{{ url_for('main.song_detail', song_id=song['id']) }}" class="card-link">
+                    <div class="card">
+                        <img src="{{ song['image'] }}" class="card-img-top" alt="{{ song['name'] }}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ song['name'] }}</h5>
+                            <p class="card-text">{{ song['artists'] }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             {% endfor %}
         </div>

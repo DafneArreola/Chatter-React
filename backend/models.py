@@ -22,9 +22,15 @@ class Comment(db.Model):
     media_id = db.Column(db.Integer, db.ForeignKey('media.id'), nullable=False)  # Added ForeignKey
     timestamp = db.Column(db.Integer, nullable=False) # I think were storing seconds?
     text = db.Column(db.String(500), nullable=False)
+    season_number = db.Column(db.Integer, nullable=True)
+    episode_number = db.Column(db.Integer, nullable=True)
+    media_type = db.Column(db.String(50), nullable=True)
     
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     media_id = db.Column(db.Integer, db.ForeignKey('media.id'), nullable=False)  # Added ForeignKey
     rating = db.Column(db.Float, nullable=False)
+    season_number = db.Column(db.Integer, nullable=True)
+    episode_number = db.Column(db.Integer, nullable=True)
+    media_type = db.Column(db.String(50), nullable=True)

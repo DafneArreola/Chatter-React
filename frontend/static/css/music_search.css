@@ -1,78 +1,58 @@
-/* static/css/music_search.css */
-
 * {
     margin: 0;
     padding: 0;
 }
 
-/* Hero Section Styling */
-.hero-section {
-    width: 100%;
-    height: 60vh; /* Take up 60% of the viewport height */
-    background-color: #333; /* Dark background color */
-    color: #fff; /* Text color */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+/* Style for the search form */
+.input-group {
+    max-width: 800px;
+    margin: 0 auto 20px;
 }
 
-.hero-section h1 {
-    font-size: 3rem; /* Increase font size for header */
-    margin-bottom: 1rem;
-}
-
-.search-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.search-bar {
-    width: 100%; /* Make search bar take full width of its container */
-    max-width: 800px; /* Set a maximum width for the search bar */
+.form-control-lg {
     height: 50px; /* Increase height of the search bar */
-    margin-bottom: 10px; /* Space between the search bar and the button */
+    border-radius: 0.3rem 0 0 0.3rem; /* Match the border radius with the button */
 }
 
-.btn-primary {
-    height: 50px; /* Match button height to search bar */
-    line-height: 50px; /* Center text vertically in the button */
-    width: 100%; /* Make the button take full width of its container */
-    max-width: 800px; /* Match the button width to the search bar */
-    text-align: center;
+.input-group-append .btn-lg {
+    height: 50px; /* Match the height of the search bar */
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    border-radius: 0 0.3rem 0.3rem 0; /* Match the border radius with the search bar */
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
 /* Style for the song covers */
 .card {
-    border: 1px solid #ddd; /* Light border for the card */
+    background-color: #333; /* Dark grey background */
+    color: #fff; /* White text color */
+    border: none; /* Remove card border */
+    border-radius: 8px; /* Rounded corners */
 }
 
 .card-img-top {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     height: 300px; /* Fixed height for images */
     object-fit: cover; /* Ensure image covers the space */
 }
 
-.card-body {
-    text-align: center;
-    color: black;
+.card .card-title {
+    font-weight: bold; /* Bold song title */
 }
 
-span { 
-    position:absolute; 
-    width:100%;
-    height:100%;
-    top:0;
-    left: 0;
-    
-    z-index: 1;
-    
-    /* fixes overlap error in IE7/8, 
-        make sure you have an empty gif */
-    /*background-image: url('empty.gif');*/
-}  
+.card .card-text {
+    color: #bbb; /* Lighter text for song artists */
+}
+
+.container {
+    padding: 20px;
+}
 
 .no-results-found {
     text-align: center;
+    color: #fff;
 }

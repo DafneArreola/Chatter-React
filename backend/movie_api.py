@@ -26,7 +26,7 @@ def fetch_discover_movies():
     response = requests.get(url)
     data = response.json()
     if 'results' in data:
-        movies = data['results'][:18]  # Get only the first 18 movies
+        movies = data['results'][:20]  # Get only the first 18 movies
         return movies
     else:
         logging.error(f"Unexpected response structure: {data}")

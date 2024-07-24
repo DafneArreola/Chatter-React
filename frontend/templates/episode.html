@@ -64,7 +64,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-    `var id = {{ episode.id }}`
+    var id = `{{ episode.id }}`;
 </script>
 <script src="{{ url_for('static', filename='js/episode.js') }}" defer></script>
 {% endblock %}

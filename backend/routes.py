@@ -80,28 +80,31 @@ def submit_review():
     if media_type == 'music':
         return redirect(url_for('main.song_detail', song_id=media_id))
     if media_type == 'show':
-        return redirect(url_for('main.show', movie_id=media_id))
+        return redirect(url_for('main.episode_details', episode_id=media_id))
+    else:
+        # Handle other media types (if applicable)
+        return redirect(url_for('main.index'))
     
     # Process the rating (e.g., save it to the database)
     #flash('Thank you for your review!', 'success')
     #return redirect(url_for('main.movie', movie_id=movie_id))
 
 
-@main.route('/music', methods=['GET','POST'])
+@main.route('/music', methods=['GET', 'POST'])
 def music_search():
     form = SearchForm()
     results = []
 
     if form.validate_on_submit():
-        results = get_search_tracks( form.name_search.data )
+        results = get_search_tracks(form.name_search.data)
         if len(results) == 1 and results[0] == False:
             results = 'Result Not Found'
-        print("$####################")
-        print(results[0])
+        search_query = form.name_search.data
     else:
         results = get_home_tracks()
+        search_query = None
         
-    return render_template('music_search.html', results=results, form=form)
+    return render_template('music_search.html', results=results, form=form, search_query=search_query)
 
 @main.route('/song/<song_id>')
 def song_detail(song_id):
@@ -234,34 +237,40 @@ def get_comments():
 
 @main.route('/submit_comment', methods=['POST'])
 def submit_comment():
-    # define neccesary vars from url params
-    media_title  = request.args.get('media_title', None)
+    # Retrieve necessary variables from form or URL parameters
+    media_title = request.args.get('media_title', None)
     media_id = request.args.get('media_id', None)
-    media_type  = request.args.get('media_type', None)
+    media_type = request.args.get('media_type', None)
 
-    # check if user is signed in
+    # Check if user is signed in (session check)
     if 'user_id' not in session:
-        return redirect(url_for('main.login'))
+        return redirect(url_for('main.login'))  # Redirect to login page if user is not logged in
 
-    # obtain neccesary vars from session and form 
+    # Obtain necessary variables from session and form
     user_id = session['user_id']
-    #media_id = request.form.get('media_id')
     timestamp = request.form.get('timestamp')
     text = request.form.get('text')
 
-    # define user and media var (note, if media is not found, it will default to NONE)
+    # Find the user and media objects (create media if not found)
     user = db.session.query(User).filter(User.id == user_id).first()
     media = db.session.query(Media).filter(Media.id == media_id).first()
 
-    # create a media object if none is found
     if not media:
+        # Create a new media object if not found
         media = Media(id=media_id, title=media_title, media_type=media_type)
 
-    # add comment, and assign it a user
+    # Create a new comment object and associate it with the user and media
     if user and media:
         new_comment = Comment(user_id=user.id, media_id=media.id, timestamp=int(timestamp), text=text)
         db.session.add(new_comment)
         db.session.commit()
+
+        # Redirect to a success page or return a JSON response indicating success
+        return jsonify({'message': 'Comment submitted successfully'})
+
+    # Handle error or invalid request
+    return jsonify({'error': 'Failed to submit comment'}), 400  # Return a JSON error response with status code 400
+
 
 @main.route('/account')
 def account():

@@ -8,3 +8,4 @@ Flask-Migrate
 SearchForm
 flask_wtf
 flask 
+flask-socketio

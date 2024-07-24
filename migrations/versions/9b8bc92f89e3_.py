@@ -23,6 +23,19 @@ def upgrade():
                existing_type=sa.INTEGER(),
                type_=sa.String(length=50),
                existing_nullable=False)
+        # Add columns to comment table
+    op.add_column('comment', sa.Column('season_number', sa.Integer(), nullable=True))
+    op.add_column('comment', sa.Column('episode_number', sa.Integer(), nullable=True))
+    op.add_column('comment', sa.Column('media_type', sa.String(length=50), nullable=True))
+
+    # Add columns to rating table
+    op.add_column('rating', sa.Column('season_number', sa.Integer(), nullable=True))
+    op.add_column('rating', sa.Column('episode_number', sa.Integer(), nullable=True))
+    op.add_column('rating', sa.Column('media_type', sa.String(length=50), nullable=True))
+
+    # Set constraints based on media type
+    op.execute("UPDATE comment SET season_number=NULL, episode_number=NULL WHERE media_type != 'show'")
+    op.execute("UPDATE rating SET season_number=NULL, episode_number=NULL WHERE media_type != 'show'")
 
     # ### end Alembic commands ###
 
@@ -34,5 +47,15 @@ def downgrade():
                existing_type=sa.String(length=50),
                type_=sa.INTEGER(),
                existing_nullable=False)
+    
+    # Drop columns from comment table
+    op.drop_column('comment', 'season_number')
+    op.drop_column('comment', 'episode_number')
+    op.drop_column('comment', 'media_type')
+
+    # Drop columns from rating table
+    op.drop_column('rating', 'season_number')
+    op.drop_column('rating', 'episode_number')
+    op.drop_column('rating', 'media_type')
 
     # ### end Alembic commands ###
