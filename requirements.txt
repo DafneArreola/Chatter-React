@@ -6,7 +6,6 @@ wtforms
 flask_wtf
 Flask-Migrate
 SearchForm
-flask_wtf
-flask 
+flask_wtf 
 flask-socketio
 flask-login
