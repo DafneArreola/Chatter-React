@@ -142,7 +142,7 @@ def music_player():
     session['spotify_expires_at'] = user.spotify_expires_at
     access_token = user.spotify_access_token
     currently_playing_response = get_current_track_info(access_token)
-    print(currently_playing_response)
+    print(currently_playing_response.json())
 
     playback_status_return = {}
 
