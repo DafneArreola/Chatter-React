@@ -16,16 +16,17 @@
             <!--<a href=""><span></span></a> -->
             <img src="{{ playback_status['image'] if playback_status else '' }}" id="player-image" alt="no currently playing song. please play a song on spotify player">
             
-            {% if playback_status %}
             <p id="player-name">{{playback_status['name']}}</p>
-            <!--  <p>{{playback_status['progress_ms']}} / {{playback_status['duration_ms']}}</p> -->
+            <p id="timestamp">{{playback_status['progress_ms']}} / {{playback_status['duration_ms']}}</p> -->
             <div class="progress mt-3">
                 <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="30"></div>
             </div>
-            {% endif %}
+            <button id="play-pause">play</button>
 
             <p>{{playback_status}}</p>
             <a href="{{ url_for('main.music_search') }}"><button>go back</button></a>
+            
+            
 
             <div id="lol"></div>
 

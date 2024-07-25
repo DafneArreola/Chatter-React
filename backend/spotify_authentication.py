@@ -7,8 +7,8 @@ from backend.models import User
 
 CLIENT_ID = Config.MUSIC_CLIENT_ID
 CLIENT_SECRET = Config.MUSIC_CLIENT_SECRET
-# REDIRECT_URI = 'http://localhost:5000/callback'
-REDIRECT_URI = 'https://chatterreact.pythonanywhere.com/callback'
+REDIRECT_URI = 'http://localhost:5000/callback'
+# REDIRECT_URI = 'https://chatterreact.pythonanywhere.com/callback'
 
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token/' # used to obtain and refresh token
@@ -76,6 +76,18 @@ def get_current_track_info(spotify_access_token):
     headers = {
         'Authorization': f"Bearer {spotify_access_token}"
     }
-    return requests.get(API_BASE_URL + 'me/player/currently-playing', headers=headers)
+    return requests.get(API_BASE_URL + 'me/player', headers=headers)
+
+
+
+def put_pause_and_play(spotify_access_token, device_id):
+    headers = {
+        'Authorization': f"Bearer {spotify_access_token}"
+    }
+    params = f'device_id={device_id}'
+
+    return requests.put(API_BASE_URL + 'me/player/play' + '?' +  params, headers=headers)
+
+
 
     

@@ -13,7 +13,7 @@ import requests
 import json
 import datetime
 
-from backend.spotify_authentication import create_spotify_login_link, callback_result, token_refresh_result, get_current_track_info
+from backend.spotify_authentication import create_spotify_login_link, callback_result, token_refresh_result, get_current_track_info, put_pause_and_play
 
 USER_ID = False
 
@@ -142,20 +142,26 @@ def music_player():
     session['spotify_expires_at'] = user.spotify_expires_at
     access_token = user.spotify_access_token
     currently_playing_response = get_current_track_info(access_token)
-    print(currently_playing_response.json())
+    #print(currently_playing_response)
+    #print(currently_playing_response.json())
 
     playback_status_return = {}
 
     if currently_playing_response.status_code == 204:
         flash("there is no media currently playing")
         print("there is no media currently playing")
-    else:
+    elif currently_playing_response.status_code == 200:
         playback_status = currently_playing_response.json()
-        playback_status_return['image'] = playback_status['item']['album']['images'][1]['url']
-        playback_status_return['name'] = playback_status['item']['name']
-        playback_status_return['id'] = playback_status['item']['id']
-        playback_status_return['duration_ms'] = playback_status['item']['duration_ms']
-        playback_status_return['progress_ms'] = playback_status['progress_ms']
+        if playback_status['item'] != None:
+            playback_status_return['image'] = playback_status['item']['album']['images'][1]['url']
+            playback_status_return['name'] = playback_status['item']['name']
+            playback_status_return['id'] = playback_status['item']['id']
+            playback_status_return['duration_ms'] = playback_status['item']['duration_ms']
+            playback_status_return['progress_ms'] = playback_status['progress_ms']
+        else:
+            playback_status = {'good response, but empty item'}
+    else: 
+        playback_status_return = {'there was a bad status code on playback status'}
 
     return render_template('music_player.html', playback_status=playback_status_return)
 
@@ -183,7 +189,7 @@ def get_live_player_info():
     # if token is expired, we will refresh it in the background (user will not need to login again)
     if datetime.datetime.now().timestamp() > spotify_expires_at:
         print('token expired, refreshing.......')
-        return redirect(url_for('spotify_refresh_token'))
+        return redirect(url_for('main. spotify_refresh_token'))
 
     # makes rrequest to spotify api
     currently_playing_response = get_current_track_info(spotify_access_token)
@@ -194,30 +200,19 @@ def get_live_player_info():
     else:
         return jsonify({0})
 
-    # the dictionary i wanna return
-    # playback_status = {'progress_ms': 0, 'item':{'duration_ms':1}}
-    # return playback_status
+@main.route('/pause_and_play', methods=['GET', 'POST'])
+def pause_and_play(spotify_access_token, user_id):
+    device_id = request.args.get('device_id', None)
+    spotify_access_token = session['spotify_access_token']
 
-    # if no song is playing
-    if currently_playing_response.status_code == 204:
-        # return Response(
-        #     "There is no currently playing music",
-        #     status=400,
-        # )
-        print('fasfawefawefwef')
-    # if song is playing
+    print(user_id)
+    if user_id:
+        pause_and_play_response = put_pause_and_play(spotify_access_token=spotify_access_token, device_id=device_id)
+        print(pause_and_play_response)
+        print(pause_and_play_response.json())
+        return pause_and_play_response.json()
     else:
-        playback_status = currently_playing_response.json()
-    
-        progress_ms = playback_status['progress_ms']
-        duration_ms = playback_status['item']['duration_ms']
-
-    return jsonify({'progress_ms': progress_ms,
-                    'duration_ms': duration_ms
-                    })
-    # response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
-    # playlists = response.json()
-
+        print('no user id was passed')
 
 @main.route('/spotify_refresh_token')
 def spotify_refresh_token():
