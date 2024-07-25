@@ -1,0 +1,40 @@
+<html>
+    <header>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Website</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='music_player.css') }}">
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </header>
+    <body>
+        <h1>music home after logging in</h1> <br/>
+        <h3>currently playing song:</h3>
+        <div>
+            
+            <!--<a href=""><span></span></a> -->
+            <img src="{{ playback_status['image'] if playback_status else '' }}" alt="no currently playing song. please play a song on spotify player">
+            
+            {% if playback_status %}
+            <p>{{playback_status['name']}}</p>
+            <!--  <p>{{playback_status['progress_ms']}} / {{playback_status['duration_ms']}}</p> -->
+            <div class="progress mt-3">
+                <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="30"></div>
+            </div>
+            {% endif %}
+
+            <p>{{playback_status}}</p>
+            <a href="{{ url_for('main.music_search') }}"><button>go back</button></a>
+
+            <script src="{{ url_for('static', filename='js/music_player.js') }}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        </div>
+        
+
+        
+
+    </body>
+</html>

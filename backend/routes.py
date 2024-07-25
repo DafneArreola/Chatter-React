@@ -1,4 +1,5 @@
 from backend.movie_api import fetch_movies, search_movies, fetch_discover_movies, fetch_movie_details
+import flask
 from flask import Blueprint, request, render_template, flash,  session, url_for, redirect, Flask, jsonify
 from backend.database import db
 from backend.tv_show_api import get_popular_tv_shows_for_carousel
@@ -8,8 +9,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import User, Comment, Rating, Media
 from backend.tv_show_api import get_popular_tv_shows_for_carousel, get_tv_show_details, fetch_show_details, fetch_episode_details, search_tv_shows, get_popular_tv_shows, fetch_season_episodes, fetch_show_poster, fetch_shows
 from datetime import timedelta
+import requests
 import json
+import datetime
 
+from backend.spotify_authentication import create_spotify_login_link, callback_result, token_refresh_result, get_current_track_info
+
+USER_ID = False
 
 main = Blueprint('main', __name__)
 
@@ -17,10 +23,233 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def home():
+    global USER_ID
+
+    if 'user_id' in session:
+        USER_ID = session['user_id']
+        print(True)
+    else:
+        USER_ID = None
+        print(False)
+
     movies = fetch_movies()
     tracks = get_home_tracks()
     shows = fetch_shows()
     return render_template('home.html', movies=movies, tracks=tracks, shows=shows)
+
+######################################
+##########SPOTIFY LOGIN###############
+######################################
+@main.route('/spotify_login')
+def spotify_login():
+
+    spotify_login_link_url = create_spotify_login_link(show_dialog=request.args.get('show_dialog'))
+    return redirect(spotify_login_link_url)
+
+@main.route('/callback')
+def callback(): # this will handle both successful and unsuccessful login attempts
+    global USER_ID
+    ### for some reason, the deletes the session when it reaches this route ###
+    ## i ended up redifining the entire session in the "callback_result" function
+
+    callback_successful = callback_result(request=request, session=session, user_id_var=USER_ID)
+
+    if callback_successful:
+        return redirect(url_for('main.music_search', came_from_callback=True))
+        #user.spotify_access_token = token_info['access_token']  # used to do tasks requiring auth (lasts a day)
+        #user.spotify_refresh_token = token_info['refresh_token']  # used to avoid user needing to login after token expires
+        #user.spotify_expires_at = datetime.now().timestamp() + token_info['expires_in']  # used to avoid user needing to login after token expires
+    else:
+        return {'error': request.args['error']}
+                    
+######################################
+##########SPOTIFY LOGIN###############
+######################################
+
+
+@main.route('/music', methods=['GET', 'POST'])
+def music_search():
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+
+
+    print("MADE IT BACK TO MUSIC Search")
+    came_from_callback = request.args.get('came_from_callback', None)
+    if came_from_callback:
+        global USER_ID
+        USER_ID = session['user_id']
+        user = db.session.query(User).filter(User.id == session['user_id']).first()
+        user.spotify_access_token = session['spotify_access_token']  # used to do tasks requiring auth (lasts a day)
+        user.spotify_refresh_token = session['spotify_refresh_token']  # used to avoid user needing to login after token expires
+        user.spotify_expires_at = session['spotify_expires_at']  # used to avoid user needing to login after token expires
+        db.session.commit()
+        print(user.id)
+        print(user.spotify_access_token)
+        print(user.spotify_refresh_token)
+        print(user.spotify_expires_at)
+
+    user_signed_in_to_chatter = 'user_id' in session
+    user_id = session['user_id']
+    user_signed_in_to_spotify = None
+
+    if user_signed_in_to_chatter:
+        user = db.session.query(User).filter(User.id == session['user_id']).first()
+        user_signed_in_to_spotify = user.spotify_access_token  != None
+        
+    form = SearchForm()
+    results = []
+
+    if form.validate_on_submit():
+        results = get_search_tracks(form.name_search.data)
+        # i made it so that if there are no tracks for the search, the following will be returned: [False]
+        if len(results) == 1 and results[0] == False:
+            results = 'Result Not Found'
+        search_query = form.name_search.data
+    else:
+        results = get_home_tracks()
+        search_query = None
+        
+    return render_template('music_search.html', results=results, form=form, search_query=search_query, user_signed_in_to_chatter=user_signed_in_to_chatter, user_signed_in_to_spotify=user_signed_in_to_spotify, user_id=user_id)
+
+@main.route('/song/<song_id>')
+def song_detail(song_id):
+    # Retrieve song details, comments, and other relevant data from the database
+    song = get_track_info(song_id) #db.get_song_by_id(song_id)
+    print(song['artists'])
+    return render_template('song.html', song=song)
+
+
+@main.route('/music_player')      
+def music_player():
+    user = db.session.query(User).filter(User.id == session['user_id']).first()
+
+    print('got to get_live_player screen')
+
+
+    if user.spotify_access_token == None:
+        return redirect(url_for('spotify_login', show_dialog=False))
+    print(f"what is currently on db {datetime.datetime.now().timestamp()}")
+    print(f"current time {user.spotify_expires_at}")
+    print(f' token expires AFTER current time:{datetime.datetime.now().timestamp() > user.spotify_expires_at}')
+
+    # if token is expired, we will refresh it in the background (user will not need to login again)
+    if datetime.datetime.now().timestamp() > float(user.spotify_expires_at):
+        print('token expired, refreshing.......')
+        return redirect(url_for('main.spotify_refresh_token'))
+
+
+    session['spotify_access_token'] = user.spotify_access_token
+    session['spotify_expires_at'] = user.spotify_expires_at
+    access_token = user.spotify_access_token
+    currently_playing_response = get_current_track_info(access_token)
+    print(currently_playing_response)
+
+    playback_status_return = {}
+
+    if currently_playing_response.status_code == 204:
+        flash("there is no media currently playing")
+        print("there is no media currently playing")
+    else:
+        playback_status = currently_playing_response.json()
+        playback_status_return['image'] = playback_status['item']['album']['images'][1]['url']
+        playback_status_return['name'] = playback_status['item']['name']
+        playback_status_return['id'] = playback_status['item']['id']
+        playback_status_return['duration_ms'] = playback_status['item']['duration_ms']
+        playback_status_return['progress_ms'] = playback_status['progress_ms']
+
+    return render_template('music_player.html', playback_status=playback_status_return)
+
+@main.route('/get_live_player_info', methods=['GET', 'POST'])
+def get_live_player_info():
+
+    # set spotify_access_token and spotify_expires_at
+
+    # "access_token" will only be in session if user is logged in
+    if 'spotify_access_token' not in session:
+        user = db.session.query(User).filter(User.id == session['user_id']).first()
+        session['spotify_access_token'] = user.spotify_access_token
+    if 'spotify_expires_at' not in session:
+        user = db.session.query(User).filter(User.id == session['user_id']).first()
+        session['spotify_expires_at'] = user.spotify_expires_at
+
+
+    spotify_access_token = session['spotify_access_token']
+    spotify_expires_at = session['spotify_expires_at']
+
+    # force user to login if not logged in
+    if spotify_access_token == None:
+        return redirect(url_for('spotify_login', show_dialog=False))
+
+    # if token is expired, we will refresh it in the background (user will not need to login again)
+    if datetime.datetime.now().timestamp() > spotify_expires_at:
+        print('token expired, refreshing.......')
+        return redirect(url_for('spotify_refresh_token'))
+
+    # makes rrequest to spotify api
+    currently_playing_response = get_current_track_info(spotify_access_token)
+    if currently_playing_response.status_code == 200:
+        return jsonify(currently_playing_response.json())
+    if currently_playing_response.status_code == 204:
+        return jsonify({})
+    else:
+        return jsonify({0})
+
+    # the dictionary i wanna return
+    # playback_status = {'progress_ms': 0, 'item':{'duration_ms':1}}
+    # return playback_status
+
+    # if no song is playing
+    if currently_playing_response.status_code == 204:
+        # return Response(
+        #     "There is no currently playing music",
+        #     status=400,
+        # )
+        print('fasfawefawefwef')
+    # if song is playing
+    else:
+        playback_status = currently_playing_response.json()
+    
+        progress_ms = playback_status['progress_ms']
+        duration_ms = playback_status['item']['duration_ms']
+
+    return jsonify({'progress_ms': progress_ms,
+                    'duration_ms': duration_ms
+                    })
+    # response = requests.get(API_BASE_URL + 'me/playlists', headers=headers)
+    # playlists = response.json()
+
+
+@main.route('/spotify_refresh_token')
+def spotify_refresh_token():
+    user = db.session.query(User).filter(User.id == session['user_id']).first()
+
+    if user.spotify_refresh_token == None:
+        return redirect(url_for('spotify_login', show_dialog=False))
+    
+    response = token_refresh_result(user.spotify_refresh_token)
+    new_token_info = response.json()
+
+    # REPLACE TO DATABSE CALL
+    user.spotify_access_token = new_token_info['access_token']  # used to do tasks requiring auth (lasts a day)
+    user.spotify_expires_at = datetime.datetime.now().timestamp() + new_token_info['expires_in']  # keeping track of when token expires
+    db.session.commit()
+    session['spotify_access_token'] = user.spotify_access_token
+    session['spotify_expires_at'] = user.spotify_expires_at
+
+    print(f'REAL NEW EXPIRES AT:{ datetime.datetime.now().timestamp() + new_token_info["expires_in"]}')
+
+    return redirect(url_for('main.music_search'))
+
+
+
+
+
+
+
+
+
+
+
 
 
 @main.route('/movies', methods=['GET'])
@@ -196,57 +425,6 @@ def submit_comment_show():
 
     return redirect(url_for('main.episode_details', show_id=int(media_id), season_number=season_number, episode_number=episode_number))
 
-
-@main.route('/music', methods=['GET', 'POST'])
-def music_search():
-    form = SearchForm()
-    results = []
-
-    if form.validate_on_submit():
-        results = get_search_tracks(form.name_search.data)
-        if len(results) == 1 and results[0] == False:
-            results = 'Result Not Found'
-        search_query = form.name_search.data
-    else:
-        results = get_home_tracks()
-        search_query = None
-        
-    return render_template('music_search.html', results=results, form=form, search_query=search_query)
-
-@main.route('/song/<song_id>')
-def song_detail(song_id):
-    # Retrieve song details, comments, and other relevant data from the database
-    song = get_track_info(song_id) #db.get_song_by_id(song_id)
-    #comments = db.get_comments_for_song(song_id)
-
-    # this is a placeholder for now, until we design the db 
-    # comments = [{'username': 'egger',
-    #              'text': 'when he said "so many racks they call me the bandman" i felt that',
-    #              'timestamp': '5:55'
-    #             },
-    #             {'username': 'second user',
-    #              'text': 'wowzers',
-    #              'timestamp': '1:01'
-    #             }]
-    print(song['artists'])
-    return render_template('song.html', song=song)
-
-# @main.route('/shows', methods=['GET','POST'])
-# def shows_search():
-#     form = SearchForm()
-#     results = []
-
-#     if form.validate_on_submit():
-#         query = form.name_search.data
-#         results = search_tv_shows(query)
-#         print("$####################")
-#         if results:
-#             print(results[0])
-#         else:
-#             print("No results found")
-
-#     return render_template('shows_search.html', results=results, form=form)
-
 @main.route('/shows', methods=['GET'])
 def shows_search():
     query = request.args.get('q', '')
@@ -289,6 +467,8 @@ def episode_details(show_id, season_number, episode_number):
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
+    global USER_ID
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -296,6 +476,7 @@ def login():
         
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id  # Use 'user_id' to store user identifier
+            USER_ID = user.id
             flash('Login successful!', 'success')
             return redirect(url_for('main.home'))
         else:
@@ -326,8 +507,12 @@ def register():
 
 @main.route('/logout')
 def logout():
+    global USER_ID
+
     session.pop('username', None)
     session.pop('user_id', None)
+    USER_ID = None
+
 
     flash('You have been logged out', 'success')
     return redirect(url_for('main.home'))

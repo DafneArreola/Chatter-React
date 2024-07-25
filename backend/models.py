@@ -9,6 +9,10 @@ class User(db.Model):
     comments = db.relationship('Comment', backref='user', lazy=True)
     ratings = db.relationship('Rating', backref='user', lazy=True)
 
+    spotify_access_token = db.Column(db.String(500), nullable=True)
+    spotify_refresh_token = db.Column(db.String(500), nullable=True)
+    spotify_expires_at = db.Column(db.Float, nullable=True)
+
 class Media(db.Model):
     unique_id = db.Column(db.Integer, primary_key=True, autoincrement=True) # this is the unique key for each row
     id = db.Column(db.String(50)) # this is the MEDIA_ID (it is possible that many show episodes have same "id")
