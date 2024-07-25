@@ -201,12 +201,12 @@ def get_live_player_info():
         return jsonify({0})
 
 @main.route('/pause_and_play', methods=['GET', 'POST'])
-def pause_and_play(spotify_access_token, user_id):
+def pause_and_play():
     device_id = request.args.get('device_id', None)
     spotify_access_token = session['spotify_access_token']
 
-    print(user_id)
-    if user_id:
+    print(device_id)
+    if device_id:
         pause_and_play_response = put_pause_and_play(spotify_access_token=spotify_access_token, device_id=device_id)
         print(pause_and_play_response)
         print(pause_and_play_response.json())
