@@ -23,6 +23,7 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def home():
+    db.session.commit()
     global USER_ID
 
     if 'user_id' in session:
@@ -64,8 +65,7 @@ def callback(): # this will handle both successful and unsuccessful login attemp
         return redirect(url_for('main.music_search', came_from_callback=True))
        
     else:
-        return {'error': request.args['error']}
-                    
+        return {'error': request.args['error']} 
 ######################################
 ##########SPOTIFY LOGIN###############
 ######################################
@@ -73,9 +73,12 @@ def callback(): # this will handle both successful and unsuccessful login attemp
 
 @main.route('/music', methods=['GET', 'POST'])
 def music_search():
-    if 'user_id' not in session:
+    user_id = session.get('user_id', None)
+    #if 'user_id' not in session:
+    if user_id == None:
+        print('reached if')
+        print(user_id)
         return redirect(url_for('main.login'))
-
 
     print("MADE IT BACK TO MUSIC Search")
     came_from_callback = request.args.get('came_from_callback', None)
@@ -249,9 +252,14 @@ def spotify_player_obtain_comments():
     #user = User.query.filter_by(id=session['user_id']).first()
     print(f'timestamp={given_timestamp}')
     print(f'timestamp={media_id}')
-    comments = Comment.query.join(Media).filter(Media.id == media_id, Comment.timestamp <= int(given_timestamp), Comment.timestamp >= int(given_timestamp)-10000).all()
+    comments = Comment.query.join(Media).filter(Media.id == media_id, Comment.timestamp <= int(given_timestamp), Comment.timestamp >= int(given_timestamp)-10).all()
     print(comments)
-    return jsonify(comments)
+    comment_data = [{'username': comment.user.username, 
+                     'text': comment.text,
+                     'timestamp': comment.timestamp} 
+                     for comment in comments]
+
+    return jsonify(comment_data)
 
 
 @main.route('/spotify_refresh_token')
@@ -444,13 +452,9 @@ def submit_comment_show():
 
     print("faoejfoajeofjaefjaeof")
     print(timestamp)
-    #print(episode.unique_id)
-    #print(episode.title)
     print(episode.id)
-    #print(episode.media_type)
     print(episode.season_number)
     print(episode.episode_number)
-    #print(episode.episode_title)
 
     # add rating if not present, and update if alr presnet
     new_comment = Comment(user_id=user_id, media_id=episode.unique_id, timestamp=int(timestamp), text=text, season_number=season_number, episode_number=episode_number )
@@ -510,11 +514,15 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and check_password_hash(user.password, password):
+            print()
             session['user_id'] = user.id  # Use 'user_id' to store user identifier
+            print(f'current session user id : {session['user_id']}')
             USER_ID = user.id
             flash('Login successful!', 'success')
+            print('Login successful!', 'success')
             return redirect(url_for('main.home'))
         else:
+            print('Invalid username or password', 'danger')
             flash('Invalid username or password', 'danger')
 
     return render_template('login.html')
@@ -548,23 +556,23 @@ def logout():
     session.pop('user_id', None)
     USER_ID = None
 
-
     flash('You have been logged out', 'success')
     return redirect(url_for('main.home'))
 
 @main.route('/comments', methods=['GET'])
 def get_comments():
     media_id = request.args.get('media_id')
-    timestamp = int(request.args.get('timestamp')) // 1000 * 1000
+    timestamp = int(request.args.get('timestamp'))
     print(timestamp)
     media_type = request.args.get('media_type')
-
+    print(f'media_id:::{media_id}')
+    print(db.session.query(Comment).all())
     comments = db.session.query(Comment).join(Media).filter(Media.id == media_id, Comment.timestamp == int(timestamp)).all()
+    print(comments)
     comment_data = [{'username': comment.user.username, 'text': comment.text} for comment in comments]
 
     return jsonify(comment_data)
 
-@main.route('/comments_show', methods=['GET'])
 def get_comments_show():
     media_id = request.args.get('media_id')
     timestamp = int(request.args.get('timestamp'))
@@ -621,7 +629,7 @@ def submit_comment():
 
     # Create a new comment object and associate it with the user and media
     if user and media:
-        new_comment = Comment(user_id=user.id, media_id=media.unique_id, timestamp=int(timestamp//1000 * 1000), text=text)
+        new_comment = Comment(user_id=user.id, media_id=media.unique_id, timestamp=int(timestamp), text=text)
         db.session.add(new_comment)
         db.session.commit()
 
@@ -663,3 +671,4 @@ def register_template_filters(state):
     @app.template_filter('timestamp_to_hms')
     def timestamp_to_hms_filter(seconds):
         return str(timedelta(seconds=seconds))
+

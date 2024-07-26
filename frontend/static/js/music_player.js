@@ -7,6 +7,7 @@ $(document).ready(function() {
     const name = document.getElementById("player-name");
     const timestamp = document.getElementById("timestamp");
     const playPauseButton = document.getElementById("play-pause")
+    const commentsList = document.getElementById('comments-list');
 
     // this is the variable we use to keep track of if song switches
     let current_image = img.src
@@ -125,10 +126,21 @@ $(document).ready(function() {
 
     
     function updateComments() {
-        $.getJSON(`/spotify_player_obtain_comments?media_id=${media_id}&timestamp=${timestamp_value}`, function(data) {
-            let len = count = Object.keys(data).length;console.log()
+        if (media_id != ""){
+            $.getJSON(`/spotify_player_obtain_comments?media_id=${media_id}&timestamp=${Math.floor(timestamp_value/1000)}`, function(data) {
+                let len = count = Object.keys(data).length;
+                console.log(`LENGTH OF JOHN = ${len}`)
+                commentsList.innerHTML = '';
+                data.forEach(comment => {
+                    const commentElement = document.createElement('li');
+                    commentElement.textContent = `${comment.username}: ${comment.text} - ${comment.timestamp}`;
+                    commentsList.appendChild(commentElement);
+                })
 
-        });
+            });
+
+
+        }
     }
 
 

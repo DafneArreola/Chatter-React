@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     playbackBar.addEventListener('mouseup', () =>{
         console.log('Mouse up event triggered');
+        console.log(playbackBar.value)
         fetch(`/comments?media_id=${id}&timestamp=${playbackBar.value}&media_type=song`)
         .then(response => response.json())
         .then(data => {
