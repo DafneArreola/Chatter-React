@@ -1,4 +1,4 @@
-Flask~=3.0.3
+Flask
 Flask-SQLAlchemy
 python-dotenv
 requests
@@ -9,3 +9,4 @@ SearchForm
 flask_wtf 
 flask-socketio
 flask-login
+flask_cors

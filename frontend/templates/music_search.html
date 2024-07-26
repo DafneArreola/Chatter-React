@@ -29,6 +29,17 @@
                 </div>
             </div>
         </div>
+        
+        {% if not user_signed_in_to_chatter %}
+        <button>Login with Spotify</button>
+        <p> please login to chatter before accessing spotify login</p>
+        {% elif user_signed_in_to_chatter and not user_signed_in_to_spotify %}
+        <a href="{{ url_for('main.spotify_login', show_dialog=False, user_id=user_id) }}"><button>Login with Spotify</button></a>
+        {% elif user_signed_in_to_chatter and user_signed_in_to_spotify %}
+        <a href="{{ url_for('main.spotify_login', show_dialog=True, user_id=user_id) }}"><button>Switch Spotify User</button></a>
+        <a href="{{ url_for('main.music_player') }}"><button>live_player</button></a>
+        {% endif %}
+
 
         <!-- Search Section -->
         <div class="container mt-5">
