@@ -36,6 +36,9 @@
             </div>
             <ul class="navbar-nav ml-auto navbar-account"> <!-- Push the Login link to the right -->
                 <li class="nav-item">
+                    <a class="nav-link account-white" href="{{ url_for('main.discover_users') }}">Users</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link account-text" href="{{ url_for('main.account') }}">Account</a>
                 </li>
                 {% if 'user_id' in session %}

@@ -13,6 +13,7 @@ from collections import defaultdict
 import requests
 import json
 import datetime
+from sqlalchemy.sql import func
 
 from backend.spotify_authentication import create_spotify_login_link, callback_result, token_refresh_result, get_current_track_info, put_pause, put_play
 
@@ -780,3 +781,13 @@ def user_profile(user_id):
         media_id=get_media_id
     )
 
+@main.route('/discover_users', methods=['GET'])
+def discover_users():
+    search_query = request.args.get('q', '')
+    if search_query:
+        users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
+    else:
+        # Get 10 random users
+        users = User.query.order_by(func.random()).limit(10).all()
+
+    return render_template('discover_users.html', users=users, search_query=search_query)
