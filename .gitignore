@@ -5,3 +5,6 @@ instance/
 venv/
 Output.txt
 migrations/
+comments.csv
+create_comments.py
+migrations/env.py
