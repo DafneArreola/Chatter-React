@@ -1,25 +1,15 @@
 {% extends "base.html" %}
 
 {% block title %}
-    <title>{{ user.username }} - Account Details</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
+<title>{{ user.username }} - Profile</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user_profile.css') }}">
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
-        <!-- User Information -->
         <div class="col-12">
-            <h1><strong>Account Details</strong></h1>
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h5 class="mb-0">User Information</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Username:</strong> {{ user.username }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                </div>
-            </div>
+            <h1 style="padding-bottom: 20px;">{{ user.username }}</h1>
         </div>
 
         <!-- Ratings Accordion -->
@@ -41,6 +31,7 @@
                                 <select id="ratingSort" class="form-control d-inline-block w-auto">
                                     <option value="a-z">A-Z</option>
                                     <option value="z-a">Z-A</option>
+                                    <option value="none">None</option>
                                 </select>
 
                                 <label for="ratingFilter" class="ml-4 mr-2">Filter by:</label>
@@ -61,7 +52,6 @@
                                             {% for season_episode, ratings in seasons.items() %}
                                                 {% if season_episode %}
                                                     <li>
-                                                        <strong>{{ season_episode }}</strong>
                                                         <ul class="star-ratings">
                                                             {% for rating in ratings %}
                                                                 <li class="rating">
@@ -115,7 +105,6 @@
                                 <select id="commentSort" class="form-control d-inline-block w-auto">
                                     <option value="a-z">A-Z</option>
                                     <option value="z-a">Z-A</option>
-                                    <option value="none">None</option>
                                 </select>
 
                                 <label for="commentFilter" class="ml-4 mr-2">Filter by:</label>
@@ -163,5 +152,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/account.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/user_profile.js') }}" defer></script>
 {% endblock %}

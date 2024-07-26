@@ -1,4 +1,4 @@
-/* movie.css */
+/* song.css */
 
 .container {
     margin-top: 20px;
@@ -12,29 +12,30 @@ img {
     border-radius: 5px;
 }
 
-/* Hide the radio buttons */
-.stars input {
-    display: none;
+/* movie.css */
+
+.star-rating .stars {
+    display: flex;
+    direction: row;
+    font-size: 2rem; /* Adjust size as needed */
 }
 
-/* Style the stars */
-.stars label {
-    font-size: 3rem;
-    color: #ccc; /* Default gray color for stars */
+.star-rating input[type="radio"] {
+    display: none; /* Hide radio buttons */
+}
+
+.star-rating label {
     cursor: pointer;
-    transition: color 0.2s;
+    color: #ccc; /* Default star color */
 }
 
-/* Gold color for selected stars */
-.stars input:checked ~ label,
-.stars label:hover,
-.stars label:hover ~ label {
-    color: #FFD700; /* Gold color */
+.star-rating label .fa-star {
+    font-size: 2rem; /* Adjust size as needed */
+    color: #ccc;
 }
 
-/* Gray color for unselected stars */
-.stars input:not(:checked) ~ label {
-    color: #ccc; /* Default gray color for stars */
+.star-rating input[type="radio"]:checked ~ label .fa-star {
+    color: #FFD700; /* Highlight color for selected stars */
 }
 
 .btn {

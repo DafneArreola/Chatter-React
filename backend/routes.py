@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import User, Comment, Rating, Media
 from backend.tv_show_api import get_popular_tv_shows_for_carousel, get_tv_show_details, fetch_show_details, fetch_episode_details, search_tv_shows, get_popular_tv_shows, fetch_season_episodes, fetch_show_poster, fetch_shows
 from datetime import timedelta
+from collections import defaultdict
 import json
 
 
@@ -38,12 +39,19 @@ def movie(movie_id):
     movie = fetch_movie_details(movie_id=movie_id)
     if 'status_code' in movie and movie['status_code'] == 34:
         return redirect(url_for('main.movies_search'))
-    
-    return render_template('movie.html', movie=movie)
+
+    user_rating = 0.0
+    if 'user_id' in session:
+        user_id = session.get('user_id')
+        rating = db.session.query(Rating).join(Media).filter(Rating.user_id == user_id, Media.id == movie_id).first()
+        if rating:
+            user_rating = rating.rating
+
+    return render_template('movie.html', movie=movie, user_rating=user_rating)
+
 
 @main.route('/submit_review', methods=['POST'])
 def submit_review():    
-
     # define variables from url params
     media_title  = request.args.get('media_title', None)
     media_id = request.args.get('media_id', None)
@@ -78,7 +86,7 @@ def submit_review():
             rating.rating = rating_given
             print("UPDATED RATING")
         db.session.commit()
-
+    print(media_type)
     if media_type == 'movie':
         return redirect(url_for('main.movie', movie_id=media_id))
     if media_type == 'music':
@@ -215,21 +223,19 @@ def music_search():
 
 @main.route('/song/<song_id>')
 def song_detail(song_id):
-    # Retrieve song details, comments, and other relevant data from the database
     song = get_track_info(song_id) #db.get_song_by_id(song_id)
-    #comments = db.get_comments_for_song(song_id)
+    if 'status_code' in song and song['status_code'] == 34:
+        return redirect(url_for('main.music_search'))
 
-    # this is a placeholder for now, until we design the db 
-    # comments = [{'username': 'egger',
-    #              'text': 'when he said "so many racks they call me the bandman" i felt that',
-    #              'timestamp': '5:55'
-    #             },
-    #             {'username': 'second user',
-    #              'text': 'wowzers',
-    #              'timestamp': '1:01'
-    #             }]
-    print(song['artists'])
-    return render_template('song.html', song=song)
+    user_rating = 0.0
+    if 'user_id' in session:
+        user_id = session.get('user_id')
+        rating = db.session.query(Rating).join(Media).filter(Rating.user_id == user_id, Media.id == song_id).first()
+        if rating:
+            user_rating = rating.rating
+            print(user_rating)
+
+    return render_template('song.html', song=song, user_rating=user_rating)
 
 # @main.route('/shows', methods=['GET','POST'])
 # def shows_search():
@@ -281,11 +287,22 @@ def episode_details(show_id, season_number, episode_number):
     poster_url = fetch_show_poster(show_id, season_number)
     episode = fetch_episode_details(show_id, season_number, episode_number)
     show_data = get_tv_show_details(show_id)
+    if 'status_code' in episode and episode['status_code'] == 34:
+        return redirect(url_for('main.show_search'))
+    
     show = {
         'id': show_data['id'],
         'title': show_data['name']
     }
-    return render_template('episode.html', episode=episode, show_id=show_id, episode_number=episode_number, season_number=season_number, poster_url=poster_url, show=show)
+
+    user_rating = 0.0
+    if 'user_id' in session:
+        user_id = session.get('user_id')
+        rating = db.session.query(Rating).join(Media).filter(Rating.user_id == user_id, Media.id == show_id, Rating.season_number == season_number, Rating.episode_number == episode_number).first()
+        if rating:
+            user_rating = rating.rating
+        
+    return render_template('episode.html', episode=episode, show_id=show_id, episode_number=episode_number, season_number=season_number, poster_url=poster_url, show=show, user_rating=user_rating)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
@@ -339,7 +356,7 @@ def get_comments():
     media_type = request.args.get('media_type')
 
     comments = db.session.query(Comment).join(Media).filter(Media.id == media_id, Comment.timestamp == int(timestamp)).all()
-    comment_data = [{'username': comment.user.username, 'text': comment.text} for comment in comments]
+    comment_data = [{'username': comment.user.username, 'text': comment.text, 'user_id': comment.user.id} for comment in comments]
 
     return jsonify(comment_data)
 
@@ -366,7 +383,7 @@ def get_comments_show():
 
     comments = db.session.query(Comment).join(Media).filter(Media.id == media_id, Comment.season_number == int(season_number), Comment.episode_number == int(episode_number), Comment.timestamp == timestamp).all()
     print(comments)
-    comment_data = [{'username': comment.user.username, 'text': comment.text} for comment in comments]
+    comment_data = [{'username': comment.user.username, 'text': comment.text, 'user_id': comment.user.id} for comment in comments]
 
     return jsonify(comment_data)
 
@@ -413,27 +430,53 @@ def submit_comment():
 
 @main.route('/account')
 def account():
-    user_id = session.get('user_id')  # Get the logged-in user's ID from the session
-
-    # Fetch user details
+    user_id = session.get('user_id')
     user = User.query.get(user_id)
-    # unique_id = '629DixmZGHc7ILtEntuiWE'
     ratings = Rating.query.filter_by(user_id=user_id).all()
+    
+    # Get all comments by the user
     comments = Comment.query.filter_by(user_id=user_id).all()
-    # media = Media.query.filter_by(id=unique_id).all()
 
-    # print(ratings)
-    # print(comments)
-    # print(((ratings[8]).media_id))
-    # print(media)
-    # # Fetch media titles for ratings
-    # ratings_with_titles = [(rating, Media.query.get(rating.media_id).title) for rating in ratings]
+    # Organize ratings by media title and season/episode
+    ratings_by_media = defaultdict(lambda: defaultdict(list))
+    for rating in ratings:
+        media_title = rating.media.title
+        if rating.media.season_number and rating.media.episode_number:
+            season_episode = f"Season {rating.media.season_number} Episode {rating.media.episode_number}: {rating.media.episode_title}"
+        else:
+            season_episode = None
+        ratings_by_media[media_title][season_episode].append(rating.rating)
 
-    # # Fetch media titles for comments
-    # comments_with_titles = [(comment, Media.query.get(comment.media_id).title) for comment in comments]
-    # print(ratings_with_titles)
-    # print(comments_with_titles)
-    return render_template('account.html', user=user, ratings=ratings, comments=comments)
+    # Group comments by media title
+    comments_by_media = {}
+    for comment in comments:
+        media_title = comment.media.title
+        if media_title not in comments_by_media:
+            comments_by_media[media_title] = []
+        comments_by_media[media_title].append(comment)
+
+    # Define media type function
+    def get_media_type(title):
+        media = Media.query.filter_by(title=title).first()
+        if media:
+            return media.media_type  # Assuming 'type' is a field in Media model
+        return 'unknown'
+
+    
+    def get_media_id(title):
+        media = Media.query.filter_by(title=title).first()
+        if media:
+            return media.id  # Assuming 'type' is a field in Media model
+        return 'unknown'
+
+    return render_template(
+        'account.html',
+        user=user,
+        ratings_by_media=ratings_by_media,
+        comments_by_media=comments_by_media,
+        media_type=get_media_type,
+        media_id=get_media_id
+    )
 
 
 @main.record_once
@@ -441,4 +484,59 @@ def register_template_filters(state):
     app = state.app
     @app.template_filter('timestamp_to_hms')
     def timestamp_to_hms_filter(seconds):
-        return str(timedelta(seconds=seconds))
+        if seconds is None or not isinstance(seconds, (int, float)):
+            return 'N/A'  # or any other default value you prefer
+        return str(timedelta(seconds=int(seconds)))
+
+
+@main.route('/user/<int:user_id>')
+def user_profile(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        flash('User not found', 'danger')
+        return redirect(url_for('main.home'))
+
+    comments = Comment.query.filter_by(user_id=user_id).all()
+    ratings = Rating.query.filter_by(user_id=user_id).all()
+
+    # Organize ratings by media title and season/episode
+    ratings_by_media = defaultdict(lambda: defaultdict(list))
+    for rating in ratings:
+        media_title = rating.media.title
+        if rating.media.season_number and rating.media.episode_number:
+            season_episode = f"Season {rating.media.season_number} Episode {rating.media.episode_number}: {rating.media.episode_title}"
+        else:
+            season_episode = None
+        ratings_by_media[media_title][season_episode].append(rating.rating)
+    
+    # Group comments by media title
+    comments_by_media = {}
+    for comment in comments:
+        media_title = comment.media.title
+        if media_title not in comments_by_media:
+            comments_by_media[media_title] = []
+        comments_by_media[media_title].append(comment)
+
+    # Define media type function
+    def get_media_type(title):
+        media = Media.query.filter_by(title=title).first()
+        if media:
+            return media.media_type  # Assuming 'type' is a field in Media model
+        return 'unknown'
+
+    def get_media_id(title):
+        media = Media.query.filter_by(title=title).first()
+        if media:
+            return media.id  # Assuming 'type' is a field in Media model
+        return 'unknown'
+
+
+    return render_template(
+        'user_profile.html',
+        user=user,
+        comments_by_media=comments_by_media,
+        ratings_by_media=ratings_by_media,
+        media_type=get_media_type,
+        media_id=get_media_id
+    )
+

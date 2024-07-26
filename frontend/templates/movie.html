@@ -3,6 +3,7 @@
 {% block title %}
 <title>{{ movie.title }} - Movie Details</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/movie.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Include Font Awesome -->
 {% endblock %}
 
 {% block content %}
@@ -19,23 +20,27 @@
             <p><strong>Overall Rating:</strong> {{ movie.vote_average }}</p>
             <p><strong>Genres:</strong> {{ movie.genres | map(attribute='name') | join(', ') }}</p>
         
-                <!-- Star Rating System -->
+            <!-- Star Rating System -->
             <div class="star-rating mt-4">
                 <h3>Rate this movie:</h3>
                 <form action="{{ url_for('main.submit_review', media_title=movie.title, media_id=movie.id, media_type='movie') }}" method="post">
                     <div class="stars">
                         {% for i in range(1, 6) %}
-                            <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" />
-                            <label for="star{{ i }}" title="{{ i }} stars">&#9733;</label>
+                            <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}"/>
+                            <label for="star{{ i }}" title="{{ i }} stars">
+                                {% if (user_rating + 1) > i %} 
+                                    <span class="fa fa-star checked"></span>
+                                {% else %}
+                                    <span class="fa fa-star"></span>
+                                {% endif %} 
+                            </label>
                         {% endfor %}
                     </div>
                     <button type="submit" class="btn btn-primary mt-2">Submit Review</button>
-                </form>
+                </form>                
             </div>
         </div>
     </div>
-
-
 
     <!-- Playback Bar -->
     <div class="playback-bar mt-4">
@@ -50,7 +55,13 @@
     <!-- Comments Section -->
     <div class="comments mt-4">
         <h3>Comments:</h3>
-        <ul id="comments-list"></ul>
+        <ul id="comments-list">
+            {% for comment in comments %}
+                <li>
+                    <strong>{{ comment.user.username }}:</strong> {{ comment.text }}
+                </li>
+            {% endfor %}
+        </ul>
         <form id="comment-form" action="{{ url_for('main.submit_comment', media_title=movie.title, media_id=movie.id, media_type='movie') }}" method="post">
             <input type="hidden" name="media_id" value="{{ movie.id }}">
             <input type="hidden" id="comment-timestamp" name="timestamp" value="0">
@@ -66,6 +77,7 @@
 {% block scripts %}
 <script>
     var id = `{{ movie.id }}`;
+    var userRating = `{{ user_rating|default(0) }}`;
 </script>
 <script src="{{ url_for('static', filename='js/movie.js') }}" defer></script>
 {% endblock %}

@@ -8,42 +8,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const commentsList = document.getElementById('comments-list');
 
     const stars = document.querySelectorAll('.stars label');
+    const userRating = window.userRating;
+
     stars.forEach((star, index) => {
         star.addEventListener('click', () => {
             // Clear all stars
-            stars.forEach(s => s.style.color = '#ccc');
+            stars.forEach(s => s.querySelector('.fa-star').style.color = '#ccc');
             // Highlight selected star and all previous stars
             for (let i = 0; i <= index; i++) {
-                stars[i].style.color = '#FFD700';
+                stars[i].querySelector('.fa-star').style.color = '#FFD700';
             }
         });
     });
+
+    // Highlight stars based on user rating
+    if (userRating > 0) {
+        stars.forEach((star, index) => {
+            if (index < userRating) {
+                star.querySelector('.fa-star').style.color = '#FFD700';
+            }
+        });
+    }
     
     playbackBar.addEventListener('input', () => {
-        console.log("input event activated")
         const totalSeconds = parseInt(playbackBar.value, 10);
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
 
         currentTimeDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        console.log(currentTimeDisplay.textContent)
         document.getElementById('comment-timestamp').value = playbackBar.value;
     });
 
     playbackBar.addEventListener('mouseup', () =>{
-        console.log("mouse_up event triggered")
         fetch(`/comments?media_id=${id}&timestamp=${playbackBar.value}&media_type=movie`)
         .then(response => response.json())
         .then(data => {
             commentsList.innerHTML = '';
             data.forEach(comment => {
                 const commentElement = document.createElement('li');
-                commentElement.textContent = `${comment.username}: ${comment.text}`;
+        
+                // Create a link for the username
+                const usernameLink = document.createElement('a');
+                usernameLink.href = `/user/${comment.user_id}`;  // Link to the user's profile page
+                usernameLink.textContent = comment.username;
+                usernameLink.style.color = '#007bff'; // Optional: style link
+                usernameLink.style.textDecoration = 'none'; // Optional: remove underline
+
+                // Append username link and comment text
+                commentElement.appendChild(usernameLink);
+                commentElement.appendChild(document.createTextNode(`: ${comment.text}`));
                 commentsList.appendChild(commentElement);
             });
         });
-    })
+    });
 
     commentForm.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -59,6 +77,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-
 });
