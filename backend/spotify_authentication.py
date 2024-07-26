@@ -7,9 +7,9 @@ from backend.models import User
 
 CLIENT_ID = Config.MUSIC_CLIENT_ID
 CLIENT_SECRET = Config.MUSIC_CLIENT_SECRET
-REDIRECT_URI = 'https://ubiquitous-zebra-69v6q6qxw6pf4vgg-5000.app.github.dev/callback'
+# REDIRECT_URI = 'https://ubiquitous-zebra-69v6q6qxw6pf4vgg-5000.app.github.dev/callback'
 # REDIRECT_URI = 'http://localhost:5000/callback'
-# REDIRECT_URI = 'https://chatterreact.pythonanywhere.com/callback'
+REDIRECT_URI = 'https://chatterreact.pythonanywhere.com/callback'
 
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token/' # used to obtain and refresh token
@@ -36,7 +36,7 @@ def callback_result(request, session, user_id_var): # this will handle both succ
         # if uncessful login attempt, we will simply return error as a json object
         print("ERROR FOUND IN REQUEST")
         return False
-    
+
     if 'code' in request.args:
         #if successful login, we will use info to get token for the user so we can access playback features, and redirect user to __ page
         req_body = {
@@ -50,19 +50,19 @@ def callback_result(request, session, user_id_var): # this will handle both succ
         #print("{}:{}".format(CLIENT_ID, CLIENT_SECRET).encode())
         #formatted = "{}:{}".format(CLIENT_ID, CLIENT_SECRET).encode()
         #encoded = base64.b64encode(formatted)
-        #headers = {"Content-Type" : 'application/x-www-form-urlencoded', 
-        #           "Authorization" : "Basic {}".format(encoded)} 
-        
+        #headers = {"Content-Type" : 'application/x-www-form-urlencoded',
+        #           "Authorization" : "Basic {}".format(encoded)}
+
         response = requests.post(TOKEN_URL, data=req_body)
         token_info = response.json()
-        
+
         session['spotify_access_token'] = token_info['access_token']  # used to do tasks requiring auth (lasts a day)
         session['spotify_refresh_token'] = token_info['refresh_token']  # used to avoid user needing to login after token expires
         session['spotify_expires_at'] = datetime.now().timestamp() + token_info['expires_in']  # keeping track of when token expires
         session['user_id'] = user_id_var
 
         return True
-    
+
 def token_refresh_result(refresh_token):
     req_body = {
         'grant_type': 'refresh_token',
@@ -99,4 +99,3 @@ def put_pause(spotify_access_token, device_id):
 
 
 
-    
