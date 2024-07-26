@@ -7,7 +7,8 @@ from backend.models import User
 
 CLIENT_ID = Config.MUSIC_CLIENT_ID
 CLIENT_SECRET = Config.MUSIC_CLIENT_SECRET
-REDIRECT_URI = 'http://localhost:5000/callback'
+REDIRECT_URI = 'https://ubiquitous-zebra-69v6q6qxw6pf4vgg-5000.app.github.dev/callback'
+# REDIRECT_URI = 'http://localhost:5000/callback'
 # REDIRECT_URI = 'https://chatterreact.pythonanywhere.com/callback'
 
 AUTH_URL = 'https://accounts.spotify.com/authorize'

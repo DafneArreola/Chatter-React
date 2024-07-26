@@ -1,0 +1,97 @@
+/* music_player.css */
+
+.container {
+    margin-top: 20px;
+}
+
+h1 {
+    font-weight: bold;
+}
+
+img {
+    border-radius: 5px;
+}
+
+/* music_player.css */
+
+.playback-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.playback-bar input[type="range"] {
+    width: 100%;
+}
+
+.playback-time {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Placeholder image styling */
+#player-image {
+    border-radius: 5px;
+}
+
+.comments {
+    color: #fff; /* Light text color for readability */
+    padding: 20px; /* Add some padding around the comments section */
+    border-radius: 8px; /* Rounded corners for a softer look */
+}
+
+.comments h3 {
+    color: #fff; /* Change header color for better visibility */
+    margin-bottom: 15px; /* Space below the header */
+}
+
+.comments ul {
+    list-style: none; /* Remove default list styling */
+    padding: 0; /* Remove default padding */
+}
+
+.comments li {
+    background-color: #3a3c5e; /* Slightly lighter background for individual comments */
+    border-radius: 5px; /* Rounded corners for comments */
+    padding: 10px; /* Padding inside each comment */
+    margin-bottom: 10px; /* Space between comments */
+}
+
+.comments form {
+    margin-top: 20px; /* Space above the form */
+    background-color: #25274D; /* Background color for the form */
+    border-radius: 8px; /* Rounded corners for the form */
+    padding: 15px; /* Padding inside the form */
+}
+
+.comments textarea {
+    background-color: #3a3c5e; /* Dark background for textarea */
+    color: #ecf0f1; /* Light text color for textarea */
+    border: 1px solid #25274D; /* Dark border for the textarea */
+    border-radius: 5px; /* Rounded corners for textarea */
+}
+
+.comments textarea:focus {
+    border-color: #fff; /* Change border color on focus */
+    color: #ecf0f1; /* Light text color for textarea */
+    outline: none; /* Remove default outline */
+    background-color: #3a3c5e; /* Dark background for textarea */
+}
+
+/* Additional Styles for Buttons */
+.btn {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+}
+

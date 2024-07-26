@@ -544,7 +544,7 @@ def login():
         if user and check_password_hash(user.password, password):
             print()
             session['user_id'] = user.id  # Use 'user_id' to store user identifier
-            print(f'current session user id : {session['user_id']}')
+            print(f"current session user id : {session['user_id']}")
             USER_ID = user.id
             flash('Login successful!', 'success')
             print('Login successful!', 'success')

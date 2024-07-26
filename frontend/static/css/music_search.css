@@ -1,10 +1,8 @@
 * {
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
 }
 
-/* Style for the hero section */
 .hero {
     position: relative;
     height: 350px; /* Adjust height as needed */
@@ -44,9 +42,9 @@
     position: absolute;
     width: 80vw; /* Full width of the viewport */
     height: auto;
-    top: -155%; /* Adjust this to position the blob correctly */
-    left: 15%; /* Adjust this to center the blob */
-    transform: translateY(-20%);
+    top: -155%;
+    left: 15%;
+    transform: translateY(-10%);
     z-index: 0;
     animation: pulsate 5s infinite;
     filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
@@ -84,30 +82,7 @@
         fill: linear-gradient(115deg, #f9c6c9 0%, #f9a6c0 25%, #a2d9ff 50%, #9575cd 75%, #b39ddb 100%);
     }
 }
-
-/* Style for the search form */
-.input-group {
-    max-width: 800px;
-    margin: 0 auto 20px;
-}
-
-.form-control-lg {
-    height: 50px; /* Increase height of the search bar */
-    border-radius: 0.3rem 0 0 0.3rem; /* Match the border radius with the button */
-}
-
-.input-group-append .btn-lg {
-    height: 50px; /* Match the height of the search bar */
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    border: none;
-    border-radius: 0 0.3rem 0.3rem 0; /* Match the border radius with the search bar */
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-/* Style for the song covers */
+/* Style for the movie card */
 .card {
     background-color: #333; /* Dark grey background */
     color: #fff; /* White text color */
@@ -115,27 +90,56 @@
     border-radius: 8px; /* Rounded corners */
 }
 
-.card-img-top {
+.card img {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    height: 300px; /* Fixed height for images */
-    object-fit: cover; /* Ensure image covers the space */
 }
 
 .card .card-title {
-    font-weight: bold; /* Bold song title */
+    font-weight: bold; /* Bold movie title */
 }
 
 .card .card-text {
-    color: #bbb; /* Lighter text for song artists */
+    color: #bbb; /* Lighter text for movie overview */
 }
 
 .container {
+    padding: 20px;
+}
+
+h2 {
+    font-size: 1.5rem;
     margin-top: 20px;
 }
 
-.no-results-found {
-    text-align: center;
+.btn {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    padding: 10px 20px;
     color: #fff;
-    margin-top: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.button-container {
+    display: flex;
+    gap: 30px;
+    justify-content: center; /* Horizontally center content */
+    align-items: center; /* Vertically center content (if needed) */
+    margin: 20px 0px; /* Optional: Add some margin for spacing */
+
+}
+
+.btn2 {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+    align-items: center;
 }

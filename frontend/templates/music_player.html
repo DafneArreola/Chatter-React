@@ -1,45 +1,65 @@
-<html>
-    <header>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>My Website</title>
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/music_player.css') }}">
-        
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    </header>
-    <body>
-        <h1>music home after logging in</h1> <br/>
-        <h3>currently playing song:</h3>
-        <div>
-            
-            <!--<a href=""><span></span></a> -->
-            <img src="{{ playback_status['image'] if playback_status else '' }}" id="player-image" alt="no currently playing song. please play a song on spotify player">
-            
-            <p id="player-name">{{playback_status['name']}}</p>
-            <p id="timestamp">{{playback_status['progress_ms']}} / {{playback_status['duration_ms']}}</p> -->
-            <div class="progress mt-3">
-                <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="30"></div>
-            </div>
-            <button id="play-pause">play</button>
+{% extends "base.html" %}
 
-            <p>{{playback_status}}</p>
-            <a href="{{ url_for('main.music_search') }}"><button>go back</button></a>
-            <ul id="comments-list"></ul>
-            
-            
-            
+{% block title %}
+<title>Music Live Player</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/music_player.css') }}">
+{% endblock %}
 
-            <div id="lol"></div>
-
-            <script src="{{ url_for('static', filename='js/music_player.js') }}"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+{% block content %}
+<div class="container mt-5">
+    <h1 style="padding-bottom: 20px;">Music Home After Logging In</h1>
+    <h3 style="padding-bottom: 20px;">Currently Playing Song:</h3>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Album Cover -->
+            <img src="{{ playback_status['image'] if playback_status else 'https://via.placeholder.com/300x300?text=No+Image' }}" 
+                 id="player-image" 
+                 alt="No currently playing song" 
+                 class="img-fluid">
         </div>
-        
+        <div class="col-md-8">
+            <!-- Song Info -->
+            <h2 id="player-name"><strong>{{ playback_status['name'] if playback_status else 'No Song Playing' }}</strong></h2>
 
-        
+            <!-- Playback Bar -->
+            <div id="progressBar" class="playback-bar mt-4">
+                <h4>Playback Bar:</h4>
+                <input type="range" id="playback-bar" class="form-control-range" min="0" max="{{ playback_status['duration_ms'] // 1000 if playback_status else '100' }}" step="1" value="0">
+                <div class="playback-time">
+                    <span id="timestamp">{{ playback_status['duration_ms'] // 1000 if playback_status else '100' }}</span>
+                </div>
+            </div>
 
-    </body>
-</html>
+
+            <!-- Control Buttons -->
+            <button id="play-pause" class="btn btn-primary mt-3">Play</button>
+
+            <!-- Go Back Button -->
+            <a href="{{ url_for('main.music_search') }}" class="btn btn-secondary mt-3">Go Back</a>
+
+            <!-- Comments Section -->
+            <div class="comments mt-4">
+                <h3>Comments:</h3>
+                <ul id="comments-list"></ul>
+                <form id="comment-form" action="{{ url_for('main.submit_comment', media_title=playback_status['name'] if playback_status else 'Unknown', media_id=playback_status['id'] if playback_status else '', media_type='music') }}" method="post">
+                    <input type="hidden" name="media_id" value="{{ playback_status['id'] if playback_status else '' }}">
+                    <input type="hidden" id="comment-timestamp" name="timestamp" value="0">
+                    <div class="form-group">
+                        <label for="comment">Your Comment:</label>
+                        <textarea class="form-control" id="comment" name="text" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Submit Comment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="{{ url_for('static', filename='js/music_player.js') }}" defer></script>
+{% endblock %}
