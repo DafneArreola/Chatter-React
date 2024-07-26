@@ -80,13 +80,21 @@ def get_current_track_info(spotify_access_token):
 
 
 
-def put_pause_and_play(spotify_access_token, device_id):
+def put_play(spotify_access_token, device_id):
     headers = {
         'Authorization': f"Bearer {spotify_access_token}"
     }
     params = f'device_id={device_id}'
 
     return requests.put(API_BASE_URL + 'me/player/play' + '?' +  params, headers=headers)
+
+def put_pause(spotify_access_token, device_id):
+    headers = {
+        'Authorization': f"Bearer {spotify_access_token}"
+    }
+    params = f'device_id={device_id}'
+
+    return requests.put(API_BASE_URL + 'me/player/pause' + '?' +  params, headers=headers)
 
 
 

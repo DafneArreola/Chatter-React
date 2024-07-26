@@ -13,7 +13,7 @@ import requests
 import json
 import datetime
 
-from backend.spotify_authentication import create_spotify_login_link, callback_result, token_refresh_result, get_current_track_info, put_pause_and_play
+from backend.spotify_authentication import create_spotify_login_link, callback_result, token_refresh_result, get_current_track_info, put_pause, put_play
 
 USER_ID = False
 
@@ -55,10 +55,14 @@ def callback(): # this will handle both successful and unsuccessful login attemp
     callback_successful = callback_result(request=request, session=session, user_id_var=USER_ID)
 
     if callback_successful:
+        user = db.session.query(User).filter(User.id == USER_ID).first()
+        print(user)
+        print(user.username)
+        user.spotify_access_token = session['spotify_access_token']  # used to do tasks requiring auth (lasts a day)
+        user.spotify_refresh_token = session['spotify_refresh_token']  # used to avoid user needing to login after token expires
+        user.spotify_expires_at = session['spotify_expires_at']  # used to avoid user needing to login after token expires
         return redirect(url_for('main.music_search', came_from_callback=True))
-        #user.spotify_access_token = token_info['access_token']  # used to do tasks requiring auth (lasts a day)
-        #user.spotify_refresh_token = token_info['refresh_token']  # used to avoid user needing to login after token expires
-        #user.spotify_expires_at = datetime.now().timestamp() + token_info['expires_in']  # used to avoid user needing to login after token expires
+       
     else:
         return {'error': request.args['error']}
                     
@@ -177,6 +181,7 @@ def get_live_player_info():
     if 'spotify_expires_at' not in session:
         user = db.session.query(User).filter(User.id == session['user_id']).first()
         session['spotify_expires_at'] = user.spotify_expires_at
+    print("WENT PAST 2 IF STATEMENTS IN GET_LIVE_PLAYER_INFO")
 
 
     spotify_access_token = session['spotify_access_token']
@@ -189,30 +194,65 @@ def get_live_player_info():
     # if token is expired, we will refresh it in the background (user will not need to login again)
     if datetime.datetime.now().timestamp() > spotify_expires_at:
         print('token expired, refreshing.......')
-        return redirect(url_for('main. spotify_refresh_token'))
+        return redirect(url_for('main.spotify_refresh_token'))
 
     # makes rrequest to spotify api
+    print(f'access token BEFORE currenrlt_oplayinh call:::: {spotify_access_token}')
     currently_playing_response = get_current_track_info(spotify_access_token)
+    print(f' CURREPTLY PLAYING RESPONSE :::: {currently_playing_response}')
     if currently_playing_response.status_code == 200:
         return jsonify(currently_playing_response.json())
     if currently_playing_response.status_code == 204:
         return jsonify({})
     else:
-        return jsonify({0})
+        return jsonify({0:0})
 
-@main.route('/pause_and_play', methods=['GET', 'POST'])
-def pause_and_play():
+@main.route('/pause_player', methods=['GET', 'POST'])
+def pause_player():
     device_id = request.args.get('device_id', None)
     spotify_access_token = session['spotify_access_token']
 
     print(device_id)
     if device_id:
-        pause_and_play_response = put_pause_and_play(spotify_access_token=spotify_access_token, device_id=device_id)
-        print(pause_and_play_response)
-        print(pause_and_play_response.json())
-        return pause_and_play_response.json()
+        pause_response = put_pause(spotify_access_token=spotify_access_token, device_id=device_id)
+        if pause_response.status_code == 200:
+            return jsonify({'status_code_from_pause_player': 200})
+        else:
+            print(pause_response)
+            return pause_response
     else:
         print('no user id was passed')
+
+@main.route('/play_player', methods=['GET', 'POST'])
+def play_player():
+    device_id = request.args.get('device_id', None)
+    spotify_access_token = session['spotify_access_token']
+
+    print('PLAYPLAYER API RESPOOOOOOOOOOOO')
+    print(device_id)
+    if device_id:
+        play_response = put_play(spotify_access_token=spotify_access_token, device_id=device_id)
+        print(f'resulting play_response: {play_response}')
+        if play_response.status_code == 200:
+            return jsonify({'status_code_from_playu_player': 200})
+        else:
+            print(play_response)
+            return play_response
+    else:
+        print('no user id was passed')
+
+
+@main.route('/spotify_player_obtain_comments',  methods=['GET', 'POST'])
+def spotify_player_obtain_comments():
+    given_timestamp = request.args.get('timestamp', None)
+    media_id = request.args.get('media_id', None)
+    #user = User.query.filter_by(id=session['user_id']).first()
+    print(f'timestamp={given_timestamp}')
+    print(f'timestamp={media_id}')
+    comments = Comment.query.join(Media).filter(Media.id == media_id, Comment.timestamp <= int(given_timestamp), Comment.timestamp >= int(given_timestamp)-10000).all()
+    print(comments)
+    return jsonify(comments)
+
 
 @main.route('/spotify_refresh_token')
 def spotify_refresh_token():
@@ -515,7 +555,8 @@ def logout():
 @main.route('/comments', methods=['GET'])
 def get_comments():
     media_id = request.args.get('media_id')
-    timestamp = int(request.args.get('timestamp'))
+    timestamp = int(request.args.get('timestamp')) // 1000 * 1000
+    print(timestamp)
     media_type = request.args.get('media_type')
 
     comments = db.session.query(Comment).join(Media).filter(Media.id == media_id, Comment.timestamp == int(timestamp)).all()
@@ -580,7 +621,7 @@ def submit_comment():
 
     # Create a new comment object and associate it with the user and media
     if user and media:
-        new_comment = Comment(user_id=user.id, media_id=media.unique_id, timestamp=int(timestamp), text=text)
+        new_comment = Comment(user_id=user.id, media_id=media.unique_id, timestamp=int(timestamp//1000 * 1000), text=text)
         db.session.add(new_comment)
         db.session.commit()
 

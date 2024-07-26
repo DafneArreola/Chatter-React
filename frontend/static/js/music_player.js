@@ -9,11 +9,14 @@ $(document).ready(function() {
     const playPauseButton = document.getElementById("play-pause")
 
     // this is the variable we use to keep track of if song switches
-    current_image = img.src
+    let current_image = img.src
+    let is_playing = false;
+    let media_id = "";
+    let timestamp_value = 0;
 
     // this is the variable we will use to pause and play
     // if it is empty, do not allow pause or play to make a call to route
-    let device_id = ""
+    let device_id = "";
 
     function create_time_string(time) {
         
@@ -21,7 +24,6 @@ $(document).ready(function() {
 
         let total_duration_seconds = Math.floor(time / 1000) 
         let minutes = Math.floor(total_duration_seconds / 60)
-
 
         if (minutes < 10){
             minutes = '0' + minutes.toString()
@@ -43,20 +45,22 @@ $(document).ready(function() {
         $.getJSON('/get_live_player_info', function(data) {
             let len = count = Object.keys(data).length;
 
-            // updates user_id
-            device_id = data.device.id
-
             // handles if nothing is playing
             if (len === 0) {
                 device_id = ""
+                media_id = ""
                 img.src = ""
                 name.innerText = ""
+                timestamp_value=0
                 timestamp.innerText = ""
                 console.log("nothing playing")
             
             // handles if something is there
             } else if (len > 1) {
                 // calculate progress and duration, and update propgress bar and timestamp
+                // updates user_id
+                device_id = data.device.id
+
                 let progress_ms = data.progress_ms
                 let duration_ms = data.item.duration_ms
                 let progress_str = create_time_string(progress_ms) + " / " + create_time_string(duration_ms);
@@ -64,10 +68,13 @@ $(document).ready(function() {
                 
                 console.log('mde it to progress')
                 $('#progressBar').css('width', progress_percentage + '%');
+                timestamp_value = progress_ms
                 timestamp.innerText = progress_str
+                
 
                 // update progress id
-                let is_playing = data.is_playing
+                is_playing = data.is_playing
+                console.log(`is_playing`)
                 if (is_playing) {
                     playPauseButton.innerText = "pause"
                 } else {
@@ -78,8 +85,10 @@ $(document).ready(function() {
                 if (img != data.item.album.images[1].url) {
                     img.src = data.item.album.images[1].url
                     current_image = img.src
+                    media_id = data.item.id
                     name.innerText = data.item.name
                     timestamp.inner_text = progress_str
+                    timestamp_value = progress_ms
                 }
 
             // handles if error occurs
@@ -88,20 +97,42 @@ $(document).ready(function() {
             }
         });
 
-        
-        document.getElementById("play-pause").addEventListener("click", ()=> {
-            if (device_id === "") {
-                console.log("nothing playing")
-            } else {
-                $.getJSON(`/pause_and_play?device_id=${device_id}`, (data) => {
-                console.log(data)
-                })
-            }
-
-        })
-
 
     }
 
+    document.getElementById("play-pause").addEventListener("click", ()=> {
+        // handle if there is nothing playing
+        if (device_id === "") {
+            console.log("nothing playing")
+
+        // handle if there is someting playing
+        } else {
+            if (is_playing){
+                $.getJSON(`/pause_player?device_id=${device_id}`, (data) => {
+                    console.log(data)
+                })
+            } else if (!is_playing) {
+                $.getJSON(`/play_player?device_id=${device_id}`, (data) => {
+                    console.log(data)
+                })
+            } else {
+                console.log('trying to pause or play, but is_playing attribute is not a boolean')
+            }
+
+        }
+
+    })
+
+    
+    function updateComments() {
+        $.getJSON(`/spotify_player_obtain_comments?media_id=${media_id}&timestamp=${timestamp_value}`, function(data) {
+            let len = count = Object.keys(data).length;console.log()
+
+        });
+    }
+
+
+
     setInterval(updateProgressBar, 1000)
+    setInterval(updateComments, 3000)
 });
