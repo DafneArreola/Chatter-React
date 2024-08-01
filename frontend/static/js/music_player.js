@@ -5,12 +5,15 @@ $(document).ready(function() {
     const timestamp = document.getElementById("timestamp");
     const playPauseButton = document.getElementById("play-pause")
     const commentsList = document.getElementById('comments-list');
+    const commentForm = document.getElementById('comment-form');
+
 
     // Track playback state
     let is_playing = false;
     let media_id = "";
     let timestamp_value = 0;
     let device_id = "";
+    let song_name = ""
 
     function create_time_string(time) {
         let seconds = (Math.floor(time / 1000)) % 60;
@@ -31,6 +34,7 @@ $(document).ready(function() {
                 timestamp.innerText = "0:00 / 0:00";
                 playbackBar.value = 0;
                 playbackBar.max = 100; // Set to some default value
+                song_name = ""
             } else {
                 device_id = data.device.id;
                 let progress_ms = data.progress_ms;
@@ -49,7 +53,8 @@ $(document).ready(function() {
                 if (img.src !== data.item.album.images[1].url) {
                     img.src = data.item.album.images[1].url;
                     media_id = data.item.id;
-                    name.innerText = data.item.name;
+                    name.innerText = data.item.name
+                    song_name = data.item.name
                 }
             }
         });
@@ -71,14 +76,22 @@ $(document).ready(function() {
             $.getJSON(`/spotify_player_obtain_comments?media_id=${media_id}&timestamp=${Math.floor(timestamp_value / 1000)}`, function(data) {
                 commentsList.innerHTML = '';
                 data.forEach(comment => {
+                    console.log('comment')
                     const commentElement = document.createElement('li');
-                    commentElement.textContent = `${comment.username}: ${comment.text} - ${comment.timestamp}`;
+                    commentElement.textContent = `${comment.username}: ${comment.text * 1000} - ${create_time_string(comment.timestamp * 1000)}`;
                     commentsList.appendChild(commentElement);
                 });
             });
         }
     }
 
+    commentForm.addEventListener('submit', (event) => {
+        $.getJSON(`/submit_comment_live_player?media_id=${media_id}&timestamp=${Math.floor(timestamp_value / 1000)}&media_type=music&text=${commentForm.value}&media_title=${song_name}`, function(data) {
+            console.log("comment posted")
+        })
+    })
+
+
     setInterval(updateProgressBar, 1000);
     setInterval(updateComments, 3000);
-});
+})

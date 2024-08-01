@@ -42,14 +42,14 @@
             <div class="comments mt-4">
                 <h3>Comments:</h3>
                 <ul id="comments-list"></ul>
-                <form id="comment-form" action="{{ url_for('main.submit_comment', media_title=playback_status['name'] if playback_status else 'Unknown', media_id=playback_status['id'] if playback_status else '', media_type='music') }}" method="post">
+                <form id="comment-form" action="" method="post">
                     <input type="hidden" name="media_id" value="{{ playback_status['id'] if playback_status else '' }}">
                     <input type="hidden" id="comment-timestamp" name="timestamp" value="0">
                     <div class="form-group">
                         <label for="comment">Your Comment:</label>
                         <textarea class="form-control" id="comment" name="text" rows="3"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-2">Submit Comment</button>
+                    <button type="button" class="btn btn-primary mt-2">Submit Comment</button>
                 </form>
             </div>
         </div>

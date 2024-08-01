@@ -243,6 +243,7 @@ def spotify_player_obtain_comments():
     given_timestamp = request.args.get('timestamp', None)
     media_id = request.args.get('media_id', None)
     #user = User.query.filter_by(id=session['user_id']).first()
+    print()
     print(f'timestamp={given_timestamp}')
     print(f'timestamp={media_id}')
     comments = Comment.query.join(Media).filter(Media.id == media_id, Comment.timestamp <= int(given_timestamp), Comment.timestamp >= int(given_timestamp)-10).all()
@@ -601,6 +602,7 @@ def get_comments():
 
     return jsonify(comment_data)
 
+@main.route('/comments_show', methods=['GET'])
 def get_comments_show():
     media_id = request.args.get('media_id')
     timestamp = int(request.args.get('timestamp'))
@@ -617,15 +619,14 @@ def get_comments_show():
     print(season_number)
     print(episode_number)
     #print(episode_title)
-    
-
-    
 
     comments = db.session.query(Comment).join(Media).filter(Media.id == media_id, Comment.season_number == int(season_number), Comment.episode_number == int(episode_number), Comment.timestamp == timestamp).all()
     print(comments)
     comment_data = [{'username': comment.user.username, 'text': comment.text, 'user_id': comment.user.id} for comment in comments]
 
     return jsonify(comment_data)
+
+
 
 @main.route('/submit_comment', methods=['POST'])
 def submit_comment():
@@ -666,6 +667,53 @@ def submit_comment():
 
     # Handle error or invalid request
     return jsonify({'error': 'Failed to submit comment'}), 400  # Return a JSON error response with status code 400
+
+
+
+
+
+
+@main.route('/submit_comment_live_player', methods=['GET', 'POST'])
+def submit_comment_live_player():
+    # Retrieve necessary variables from form or URL parameters
+    media_title = request.args.get('media_title', None)
+    media_id = request.args.get('media_id', None) # this goes in Media.id variable
+    media_type = request.args.get('media_type', None)
+    timestamp = request.args.get('timestamp', None)
+    text = request.args.get('text', None)
+
+    # Check if user is signed in (session check)
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))  # Redirect to login page if user is not logged in
+
+    # Obtain necessary variables from session 
+    user_id = session['user_id']
+
+    # Find the user and media objects (create media if not found)
+    user = db.session.query(User).filter(User.id == user_id).first()
+    media = db.session.query(Media).filter(Media.id == media_id).first()
+    print(media)
+
+    if not media:
+        # Create a new media object if not found
+        print('media created')
+        media = Media(id=media_id, title=media_title, media_type=media_type)
+        db.session.add(media)
+        db.session.commit()
+
+    # Create a new comment object and associate it with the user and media
+    if user and media:
+        new_comment = Comment(user_id=user.id, media_id=media.unique_id, timestamp=int(timestamp), text=text)
+        db.session.add(new_comment)
+        db.session.commit()
+
+        # Redirect to a success page or return a JSON response indicating success
+        return jsonify({'message': 'Comment submitted successfully'})
+
+    # Handle error or invalid request
+    return jsonify({'error': 'Failed to submit comment'}), 400  # Return a JSON error response with status code 400
+
+
 
 
 @main.route('/account')
